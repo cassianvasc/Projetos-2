@@ -1,14 +1,12 @@
-<<<<<<< HEAD
 from django.shortcuts import render, get_object_or_404
-from .models import Noticia, Tag
+from .models import Tag
+from Jornalista.models import Noticia
 
-=======
 from django.shortcuts import render,redirect
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from .models import *
->>>>>>> e5a77b1c60d2c6a4c94003ff2637d404a065311e
 
 def home_page(request):
 
@@ -80,14 +78,15 @@ def UserAccountPage(request,usuario_id=None):
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
 
 
-def noticias_por_tag(request, tag_slug):
-   
-    tag = get_object_or_404(Tag, slug=tag_slug)
+def noticias_por_tag(request, tag_slug=None):
+
+    if not Tag.objects.filter(slug=tag_slug).exists():
+        return redirect('home')
+
+    tag = Tag.objects.get(slug=tag_slug)
+
+    noticias = Noticia.objects.filter(tags=tag).order_by('-data_postagem')
     
-   
-    noticias = Noticia.objects.filter(tags=tag).order_by('-data_publicacao')
-    
-   
     context = {
         'tag': tag,
         'noticias': noticias

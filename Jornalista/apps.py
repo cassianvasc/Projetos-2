@@ -1,6 +1,5 @@
 from django.apps import AppConfig
 
-
-class PerfilJornalistaConfig(AppConfig):
+class JornalistaConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'perfil_jornalista'
+    name = 'Jornalista'

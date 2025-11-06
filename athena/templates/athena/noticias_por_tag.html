@@ -1,34 +1,44 @@
-{% extends "base.html" %} 
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tag.nome }}</title>
+</head>
+<body>
+        
+    {% block content %}
+    <div class="container my-5">
+        <h1 class="mb-4">Notícias sobre: {{ tag.nome }}</h1> 
+        <p class="lead">Exibindo {{ noticias.count }} resultados.</p>
 
-{% block content %}
-<div class="container my-5">
-    <h1 class="mb-4">Notícias sobre: {{ tag.nome }}</h1> 
-    <p class="lead">Exibindo {{ noticias.count }} resultados.</p>
-
-    <hr>
-    
-    {% if noticias %}
-        {% for noticia in noticias %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ noticia.titulo }}</h5>
-                    
-                    <div class="tags-list">
-                        {% for t in noticia.tags.all %}
-                            <a href="{% url 'noticias_por_tag' t.slug %}" class="badge bg-primary text-decoration-none me-2">{{ t.nome }}</a>
-                        {% endfor %}
+        <hr>
+        
+        {% if noticias %}
+            {% for noticia in noticias %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ noticia.titulo }}</h5>
+                        
+                        <div class="tags-list">
+                            {% for t in noticia.tags.all %}
+                                <a href="{% url 'noticias_por_tag' t.slug %}" class="badge bg-primary text-decoration-none me-2">{{ t.nome }}</a>
+                            {% endfor %}
+                        </div>
+                        
+                        <small class="text-muted">Publicado em: {{ noticia.data_publicacao|date:"d/m/Y" }}</small>
+                        <p class="card-text mt-2">{{ noticia.conteudo|truncatewords:30|safe }}</p>
+                        <a href="#" class="btn btn-sm btn-outline-dark">Ler Mais</a>
                     </div>
-                    
-                    <small class="text-muted">Publicado em: {{ noticia.data_publicacao|date:"d/m/Y" }}</small>
-                    <p class="card-text mt-2">{{ noticia.conteudo|truncatewords:30 }}</p>
-                    <a href="#" class="btn btn-sm btn-outline-dark">Ler Mais</a>
                 </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Não há notícias publicadas com a tag "{{ tag.nome }}".</p>
-    {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>Não há notícias publicadas com a tag "{{ tag.nome }}".</p>
+        {% endif %}
 
-</div>
-{% endblock content %}
+    </div>
+    {% endblock content %}
+
+</body>
+</html>
