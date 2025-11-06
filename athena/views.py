@@ -82,6 +82,7 @@ def noticias_por_tag(request, tag_slug):
     tag = get_object_or_404(Tag, slug=tag_slug)
    
     noticias = Noticia.objects.filter(tags=tag).order_by('-data_publicacao')
+
    
     context = {
         'tag': tag,
