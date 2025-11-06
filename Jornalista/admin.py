@@ -1,9 +1,7 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(Noticia)
-admin.site.register(Tag)
 admin.site.register(Perfil)
-
+admin.site.register(Post)
 
 # Register your models here.

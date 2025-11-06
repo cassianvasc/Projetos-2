@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cadastro',
-    'perfil_jornalista',
+    'ckeditor',
+    'Jornalista',
 ]
 
 MIDDLEWARE = [
