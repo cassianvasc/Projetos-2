@@ -1,7 +1,4 @@
 from django.db import models
-<<<<<<< HEAD
-#from django.contrib.auth.models import User 
-#from django.contrib.gis.geos import Point
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 # Create your models here.
@@ -58,21 +55,3 @@ class Perfil(models.Model):
         self.save()
     def __str__(self):
         return f"Localização anônima: {self.session_id[:8]}..."""
-=======
-from django.contrib.auth.models import User 
-
-class Tag(models.Model):
-    nome = models.CharField(max_length=200)
-
-    def __str__(self):
-        return f"{self.nome}"
-
-class Perfil(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="perfil")
-
-    tags = models.ManyToManyField(Tag, related_name="tags");    
-
-    def __str__(self):
-       return f"Perfil de {self.user.username}"
-
->>>>>>> e5a77b1c60d2c6a4c94003ff2637d404a065311e

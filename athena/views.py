@@ -1,14 +1,11 @@
-<<<<<<< HEAD
 from django.shortcuts import render, get_object_or_404
 from .models import Noticia, Tag
 
-=======
 from django.shortcuts import render,redirect
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from .models import *
->>>>>>> e5a77b1c60d2c6a4c94003ff2637d404a065311e
 
 def home_page(request):
 
