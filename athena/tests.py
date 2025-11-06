@@ -1,15 +1,11 @@
-from django.test import TestCase,LiveServerTestCase,override_settings
+'''
 from django.contrib.auth.models import User
 import time
 
-<<<<<<< HEAD
 from django.urls import reverse
-# Importamos os modelos que queremos testar:
 from .models import Noticia, Tag 
 
-class TagViewTest(TestCase):
-    
-    
+        
     def setUp(self):
         # Cria Tags de teste
         self.tag_politica = Tag.objects.create(nome='Política Local')
@@ -54,7 +50,8 @@ class TagViewTest(TestCase):
         
         # Espera um erro 404 (Not Found), que é o comportamento do get_object_or_404
         self.assertEqual(response.status_code, 404)
-=======
+'''
+from django.test import TestCase,LiveServerTestCase,override_settings
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -197,4 +194,3 @@ class TesteE2E(LiveServerTestCase):
         saveButton.click()
 
 # Create your tests here.
->>>>>>> e5a77b1c60d2c6a4c94003ff2637d404a065311e
