@@ -105,10 +105,7 @@ def PesquisarPorNoticiaPage(request):
 
 def noticias_por_tag(request, tag_slug=None):
 
-    if not Tag.objects.filter(slug=tag_slug).exists():
-        return redirect('home')
-
-    tag = Tag.objects.get(slug=tag_slug)
+    tag = get_object_or_404(Tag,slug=tag_slug)
 
     noticias = Noticia.objects.filter(tags=tag).order_by('-data_postagem')
     
