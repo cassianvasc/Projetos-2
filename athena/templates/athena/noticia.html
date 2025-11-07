@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{noticia.titulo}}</title>
+</head>
+<body>
+        
+    <h1>{{ noticia.titulo }}</h1>
+
+    <p><small>Publicado em {{ noticia.data_postagem|date:"d/m/Y" }}</small></p>
+
+    <div>
+        {{ noticia.conteudo|safe }}
+    </div>
+
+    <a href="javascript:history.back()">← Voltar</a>
+
+    {% if noticia.tags.all %}
+    <p>Ler Mais sobre: {% for tag in noticia.tags.all %} <a href="{% url 'noticias_por_tag' tag.slug %}">{{ tag.nome }}</a> {% endfor %}</p>
+    {% endif %}
+
+</body>
+</html>

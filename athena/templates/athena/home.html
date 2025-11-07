@@ -7,10 +7,28 @@
 </head>
 
 <body>
+    <form method="get" action="{% url 'pesquisa' %}">
+        <input type="text" name="BarraDePesquisa" placeholder="Pesquisar por tag..." required>
+        <button type="submit">Buscar</button>
+    </form>
 
     {% if usuario.is_authenticated %}
         <a name="user" href="{% url 'UserAccount' usuario.id %}" ><img src="https://placehold.co/120x120" alt="Imagem do usuario"></a>   
     {% endif %}
-    
+
+    <h1>Últimas notícias</h1>
+
+    <ul>
+    {% for noticia in noticias %}
+        <li>
+            <p>noticia {{noticia.id}}</p>
+            <a href="{% url 'noticia' noticia.id %}"><h2>{{ noticia.titulo }}</h2></a>
+            <p>{{ noticia.conteudo|truncatechars:150|safe }}</p>
+        </li>
+    {% empty %}
+        <li>Nenhuma notícia disponível.</li>
+    {% endfor %}
+    </ul>
+
 </body>
 </html>

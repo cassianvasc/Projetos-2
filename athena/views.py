@@ -8,11 +8,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from .models import *
 
+import random
+
 def home_page(request):
-
     user = request.user
+    noticias_recentes = Noticia.objects.order_by('-data_postagem')[:20]
+    noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
 
-    return render(request, "athena/home.html",{'usuario': user})
+    return render(request, "athena/home.html",{'usuario': user,'noticias':noticias})
 
 def loginPage(request):
     context = {}
@@ -77,6 +80,28 @@ def UserAccountPage(request,usuario_id=None):
     tags = Tag.objects.all()
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
 
+def NoticiaPage(request,noticiaId):
+
+    noticia = Noticia.objects.get(id=noticiaId)
+
+    return render(request, 'athena/noticia.html',{'noticia': noticia})
+
+
+def PesquisarPorNoticiaPage(request):
+    termo = request.GET.get("BarraDePesquisa",'').strip()
+
+    if not termo:
+        return redirect('home')
+
+    noticias_titulo = Noticia.objects.filter(titulo__icontains=termo)
+    tagsRelacionadas = Tag.objects.filter(nome__icontains=termo)
+    noticias_tags = Noticia.objects.filter(tags__in=tagsRelacionadas)
+
+    noticias = (noticias_titulo | noticias_tags).distinct()
+
+    return render(request, 'athena/pesquisa.html',{'noticias':noticias,'termo':termo})
+
+
 
 def noticias_por_tag(request, tag_slug=None):
 
@@ -93,5 +118,7 @@ def noticias_por_tag(request, tag_slug=None):
     }
     
     return render(request, 'athena/noticias_por_tag.html', context)
+
+
 
 # Create your views here.

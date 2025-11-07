@@ -1,16 +1,15 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ tag.nome }}</title>
+    <title>Resultados da busca</title>
 </head>
+
 <body>
         
     {% block content %}
     <div class="container my-5">
-        <h1 class="mb-4">Notícias sobre: {{ tag.nome }}</h1> 
+        <h1 class="mb-4">Notícias Relacionadas a {{ termo }}</h1> 
         <p class="lead">Exibindo {{ noticias.count }} resultados.</p>
 
         <hr>
@@ -34,13 +33,12 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p>Não há notícias publicadas com a tag "{{ tag.nome }}".</p>
+            <p>Não há notícias Relacionadas com "{{ termo }}".</p>
         {% endif %}
+
+        <a href="{% url 'home' %}">← Home</a>
 
     </div>
     {% endblock content %}
-
-    <a href="{% url 'home' %}">← Home</a>
-
 </body>
 </html>

@@ -25,7 +25,11 @@ urlpatterns = [
     path('tag/<slug:tag_slug>/', views.noticias_por_tag, name='noticias_por_tag'),
     path('tag/', views.noticias_por_tag, name='noticias_por_tag'),
     
+    path('pesquisa', views.PesquisarPorNoticiaPage , name='pesquisa'),
+
     path('', views.home_page,name='home'),
+
+    path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
 
     path('login/',views.loginPage,name='login'),
 
