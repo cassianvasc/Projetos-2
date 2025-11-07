@@ -46,19 +46,28 @@ jobs:
       # 1. Remove the SCM_DO_BUILD_DURING_DEPLOYMENT app setting from your Azure App Service Environment variables.
       # 2. Refer to sample workflows for alternative deployment strategies: https://github.com/Azure/actions-workflow-samples/tree/master/AppService
 
-  Test:
+  test:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-app
 
-      - name: Test 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run tests 
         run: |
           python manage.py test
 
   deploy:
     runs-on: ubuntu-latest
-    needs: Test
+    needs: test
     
     steps:
       - name: Download artifact from build job
