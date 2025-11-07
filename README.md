@@ -30,4 +30,4 @@ As principais tecnologias utilizadas no desenvolvimento do projeto são:
 -   
 - 
 ## Link do Deploy:
-[Site](athenas-agb9hwgzb2cucacc.brazilsouth-01.azurewebsites.net)
+[Site](https://athenas-agb9hwgzb2cucacc.brazilsouth-01.azurewebsites.net)
