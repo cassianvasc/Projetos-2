@@ -93,6 +93,7 @@ Cenário  BDD 2: Login bem sucedido
 Dado que o usuário tem uma conta
 Quando o usuário informar corretamente o login e a senha 
 Então, loga em sua conta
+
 História 9: Como usuário, gostaria de redefinir minha senha.
 Cenário BDD 1: email incorreto.
 Dado que o usuário tem uma conta
@@ -102,3 +103,4 @@ Cenário  BDD 2: redefinição correta.
 Dado que o usuário tem uma conta
 Quando o usuário informar um email conectado uma conta e redefinir pelo seu email.
 Então, sua senha será redefinida.
+
