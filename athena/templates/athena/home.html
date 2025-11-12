@@ -7,10 +7,33 @@
 </head>
 
 <body>
-
+<div class="podcast-section" style="padding-bottom: 50px;">
     {% if usuario.is_authenticated %}
         <a name="user" href="{% url 'UserAccount' usuario.id %}" ><img src="https://placehold.co/120x120" alt="Imagem do usuario"></a>   
     {% endif %}
-    
+    <h2>Podcasts ao Vivo</h2>
+
+        {% if live_podcasts %}
+            <div class="podcast-list">
+                {% for podcast in live_podcasts %}
+                    <div class="podcast-item" style="border-bottom: 1px solid #eee; padding: 10px;">
+                        <h3>
+                            <a href="{% url 'podcast:player' podcast.id %}">{{ podcast.title }}</a>
+                        </h3>
+                        
+                        {% if podcast.thumbnail %}
+                            <img src="{{ podcast.thumbnail.url }}" alt="Thumbnail do podcast" width="100">
+                        {% endif %}
+                        
+                        <p>{{ podcast.description|truncatewords:25 }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Nenhum podcast ao vivo no momento. Volte mais tarde!</p>
+        {% endif %}
+    </div>
+
+{% endblock content %}
 </body>
 </html>
