@@ -30,5 +30,11 @@ urlpatterns = [
 
     path('register/',views.registerPage,name='register'),
 
-    path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'),
+    path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'), 
+    
+    path('', views.live_podcasts_list, name='list'),
+
+    path('player/<int:Podcast_Player_id>/', views.podcast_player, name='player'),
+
+    path('api/status/<int:Podcast_Player_id>/', views.podcast_status, name='status'),
 ]

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ckeditor',
     'Jornalista',
+    'Podcast_Player',
 ]
 
 MIDDLEWARE = [
