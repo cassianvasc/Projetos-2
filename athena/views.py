@@ -7,11 +7,48 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from .models import *
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from math import radians, cos, sin, asin, sqrt
+import json
+import random
+
+def haversine(lat1, lon1, lat2, lon2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    r = 6371
+    return c * r
+
 def home_page(request):
-
     user = request.user
+    latitude = request.session.get('latitude')
+    longitude = request.session.get('longitude')
 
-    return render(request, "athena/home.html",{'usuario': user})
+    noticias_recentes = Noticia.objects.order_by('-data_postagem')[:50]
+    
+    print(f"localização:{latitude},{longitude}")
+
+    if latitude and longitude:
+        noticias_proximas = [
+            n for n in noticias_recentes
+            if n.latitude and n.longitude and haversine(latitude, longitude, n.latitude, n.longitude) <= 50
+        ]
+        if noticias_proximas:
+            noticias = random.sample(noticias_proximas, min(5, len(noticias_proximas)))
+        else:
+            noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+    else:
+        noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+    
+    context = {
+        'usuario': user,
+        'noticias': noticias,
+        'logado': user.is_authenticated
+    }
+    return render(request, "athena/home.html", context)
 
 def loginPage(request):
     context = {}
@@ -76,19 +113,54 @@ def UserAccountPage(request,usuario_id=None):
     tags = Tag.objects.all()
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
 
+def NoticiaPage(request,noticiaId):
 
-def noticias_por_tag(request, tag_slug):
-   
-    tag = get_object_or_404(Tag, slug=tag_slug)
-   
-    noticias = Noticia.objects.filter(tags=tag).order_by('-data_publicacao')
+    noticia = Noticia.objects.get(id=noticiaId)
 
-   
+    return render(request, 'athena/noticia.html',{'noticia': noticia})
+
+def PesquisarPorNoticiaPage(request):
+    termo = request.GET.get("BarraDePesquisa",'').strip()
+
+    if not termo:
+        return redirect('home')
+
+    noticias_titulo = Noticia.objects.filter(titulo__icontains=termo)
+    tagsRelacionadas = Tag.objects.filter(nome__icontains=termo)
+    noticias_tags = Noticia.objects.filter(tags__in=tagsRelacionadas)
+
+    noticias = (noticias_titulo | noticias_tags).distinct()
+
+    return render(request, 'athena/pesquisa.html',{'noticias':noticias,'termo':termo})
+
+def noticias_por_tag(request, tag_slug=None):
+
+    noticias = Noticia.objects.all().order_by('-data_postagem')
+
+    if tag_slug != None:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        noticias = noticias.filter(tags=tag)
+    else:
+        tag = Tag(nome="Todas", slug="todas")
+
     context = {
         'tag': tag,
         'noticias': noticias
     }
     
     return render(request, 'athena/noticias_por_tag.html', context)
+
+@csrf_exempt  
+def set_location(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+
+        request.session['latitude'] = latitude
+        request.session['longitude'] = longitude
+
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'fail'}, status=400)
 
 # Create your views here.

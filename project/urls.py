@@ -28,14 +28,21 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('tag/<slug:tag_slug>/', views.noticias_por_tag, name='noticias_por_tag'),
+    path('tag/', views.noticias_por_tag, name='noticias_por_tag'),
     
+    path('pesquisa', views.PesquisarPorNoticiaPage , name='pesquisa'),
+
     path('', views.home_page,name='home'),
 
     path('login/',views.loginPage,name='login'),
 
     path('register/',views.registerPage,name='register'),
 
-    path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'), 
+    path('set-location/', views.set_location, name='set_location'), 
+
+    path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
+
+    path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'),
 
     path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
 

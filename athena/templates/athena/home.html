@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jornal do Commercio - Portal de Notícias</title>
+    <title>Jornal do Comercio - Portal de Notícias</title>
     <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -14,7 +14,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1><i class="fas fa-newspaper"></i> Jornal do Commercio</h1>
+                    <h1><i class="fas fa-newspaper"></i> Jornal do Comercio</h1>
                 </div>
                 
                 <nav class="nav-menu">
@@ -38,9 +38,11 @@
     <section class="search-section">
         <div class="container">
             <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar notícias...">
-                <button class="search-btn" id="searchBtn">Buscar</button>
+                <form method="get" action="{% url 'pesquisa' %}">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="BarraDePesquisa" id="searchInput" placeholder="Buscar notícias...">
+                    <button type="submit" class="search-btn" id="searchBtn">Buscar</button>
+                </form>
             </div>
         </div>
     </section>
@@ -49,13 +51,13 @@
     <section class="categories-section">
         <div class="container">
             <div class="categories">
-                <button class="category-btn active" data-category="todas">Todas</button>
-                <button class="category-btn" data-category="politica">Política</button>
-                <button class="category-btn" data-category="economia">Economia</button>
-                <button class="category-btn" data-category="esportes">Esportes</button>
-                <button class="category-btn" data-category="tecnologia">Tecnologia</button>
-                <button class="category-btn" data-category="cultura">Cultura</button>
-                <button class="category-btn" data-category="mundo">Mundo</button>
+                <a href="{%  url 'noticias_por_tag' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
+                <a href="{%  url 'noticias_por_tag' 'politica' %}"><button  class="category-btn" data-category="politica">Política</button></a>
+                <a href="{%  url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
+                <a href="{%  url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>
+                <a href="{%  url 'noticias_por_tag' 'tecnologia' %}"><button class="category-btn" data-category="tecnologia">Tecnologia</button></a>
+                <a href="{%  url 'noticias_por_tag' 'cultura' %}"><button class="category-btn" data-category="cultura">Cultura</button></a>
+                <a href="{%  url 'noticias_por_tag' 'mundo' %}"><button class="category-btn" data-category="mundo">Mundo</button></a>
             </div>
         </div>
     </section>
@@ -87,20 +89,53 @@
     </section>
 
     <!-- Grade de Notícias -->
-    <section class="news-section">
-        <div class="container">
-            <h2 class="section-title">Últimas Notícias</h2>
-            <div class="news-grid" id="newsGrid">
-                <!-- As notícias serão inseridas aqui via JavaScript -->
-            </div>
-            
-            <div class="load-more">
-                <button class="load-more-btn" id="loadMoreBtn">
-                    Carregar mais notícias <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
+<section class="news-section">
+    <div class="container">
+        <h2 class="section-title">Últimas Notícias</h2>
+        <div class="news-grid" id="newsGrid">
+            {% for noticia in noticias %}
+                <div class="news-card">
+                    <div class="news-image">
+                        {% if noticia.imagem %}
+                            <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem" alt="Sem imagem">
+                        {% endif %}
+                        {% if noticia.tag %}
+                            <span class="category-tag">{{ noticia.tag|title }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">{{ noticia.titulo }}</h3>
+                        <p class="news-meta">
+                            <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \d\e F, Y" }}</span>
+                            {% if noticia.autor %}
+                                <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
+                            {% endif %}
+                        </p>
+                        <p class="news-excerpt">
+                            {{ noticia.conteudo|truncatewords:25|safe }}
+                        </p>
+                        <a href="{% url 'noticia' noticia.id %}" class="read-more-btn">
+                            Ler mais <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <button class="favorite-btn" data-id="{{ noticia.id }}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            {% empty %}
+                <p>Nenhuma notícia encontrada no momento.</p>
+            {% endfor %}
         </div>
-    </section>
+
+        <div class="load-more">
+            <button class="load-more-btn" id="loadMoreBtn">
+                Carregar mais notícias <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+    </div>
+</section>
 
     <!-- Seção de Favoritos -->
     <section class="favorites-section" id="favoritos">
@@ -165,6 +200,7 @@
         </div>
     </footer>
 
-    <script src="{% static 'athena/js/script.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/GetGeoLocation.js' %}"></script>
 </body>
 </html>

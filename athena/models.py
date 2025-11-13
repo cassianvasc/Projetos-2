@@ -1,45 +1,39 @@
 from django.db import models
+from Jornalista.models import Noticia
+from django.contrib.auth.models import User 
 from django.utils.text import slugify
-from django.contrib.auth.models import User
-# Create your models here.
 
 # NOVO MODELO: Tag
 class Tag(models.Model):
     nome = models.CharField(max_length=50, unique=True, verbose_name='Nome da Tag')
     slug = models.SlugField(unique=True, max_length=60, blank=True)
     
-  
     class Meta:
         verbose_name = 'Tag de Conteúdo'
-        verbose_name_plural = 'Tags de Conteúdo'
-    
+        verbose_name_plural = 'Tags de Conteúdo'    
    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.nome)
         super().save(*args, **kwargs)
-
     
     def __str__(self):
         return self.nome
 
-class Noticia(models.Model):
-    titulo = models.CharField(max_length=200)
-    conteudo = models.TextField()
-    data_publicacao = models.DateTimeField(auto_now_add=True)
-    
-    # Adicionar o campo aqui:
-    tags = models.ManyToManyField(Tag, related_name='noticias')
-    
-    def __str__(self):
-        return self.titulo
-           
+
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="perfil")
+    tags = models.ManyToManyField(Tag, related_name='perfilComTag')
+    relevantes = models.ManyToManyField(Noticia, related_name='PerfilComNoticia')
+
+    latitude = models.FloatField(null=True,blank=True)
+    longitude = models.FloatField(null=True,blank=True)
+
     def __str__(self):
        return f"Perfil de {self.user.username}"
     
-"""class Localização(models.Model):
+"""
+class Localização(models.Model):
     session_id = models.CharField(max_length=40, unique=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     location = models.PointField(null=True, blank=True, srid=4326)
@@ -54,4 +48,5 @@ class Perfil(models.Model):
         self.location = Point(longitude, latitude, srid=4326)
         self.save()
     def __str__(self):
-        return f"Localização anônima: {self.session_id[:8]}..."""
+        return f"Localização anônima: {self.session_id[:8]}...
+"""
