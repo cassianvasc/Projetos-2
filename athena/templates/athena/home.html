@@ -1,39 +1,170 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Jornal do Commercio - Portal de Notícias</title>
+    <link rel="stylesheet" href="{% static 'athena/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-<div class="podcast-section" style="padding-bottom: 50px;">
-    {% if usuario.is_authenticated %}
-        <a name="user" href="{% url 'UserAccount' usuario.id %}" ><img src="https://placehold.co/120x120" alt="Imagem do usuario"></a>   
-    {% endif %}
-    <h2>Podcasts ao Vivo</h2>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><i class="fas fa-newspaper"></i> Jornal do Commercio</h1>
+                </div>
+                
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="{% url 'home_page' %}" class="active">Início</a></li>
+                        <li><a href="#favoritos">Favoritos</a></li>
+                        <li><a href="#sobre">Sobre</a></li>
+                    </ul>
+                </nav>
 
-        {% if live_podcasts %}
-            <div class="podcast-list">
-                {% for podcast in live_podcasts %}
-                    <div class="podcast-item" style="border-bottom: 1px solid #eee; padding: 10px;">
-                        <h3>
-                            <a href="{% url 'podcast:player' podcast.id %}">{{ podcast.title }}</a>
-                        </h3>
-                        
-                        {% if podcast.thumbnail %}
-                            <img src="{{ podcast.thumbnail.url }}" alt="Thumbnail do podcast" width="100">
-                        {% endif %}
-                        
-                        <p>{{ podcast.description|truncatewords:25 }}</p>
-                    </div>
-                {% endfor %}
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
             </div>
-        {% else %}
-            <p>Nenhum podcast ao vivo no momento. Volte mais tarde!</p>
-        {% endif %}
-    </div>
+        </div>
+    </header>
 
-{% endblock content %}
+    <!-- Barra de Busca -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar notícias...">
+                <button class="search-btn" id="searchBtn">Buscar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorias -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="categories">
+                <button class="category-btn active" data-category="todas">Todas</button>
+                <button class="category-btn" data-category="politica">Política</button>
+                <button class="category-btn" data-category="economia">Economia</button>
+                <button class="category-btn" data-category="esportes">Esportes</button>
+                <button class="category-btn" data-category="tecnologia">Tecnologia</button>
+                <button class="category-btn" data-category="cultura">Cultura</button>
+                <button class="category-btn" data-category="mundo">Mundo</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Notícia em Destaque -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="featured-news" id="featuredNews">
+                <div class="featured-image">
+                    <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Notícia+em+Destaque" alt="Notícia Principal">
+                    <span class="category-tag">Destaque</span>
+                </div>
+                <div class="featured-content">
+                    <h2>Manchete Principal: Grandes Mudanças no Cenário Nacional</h2>
+                    <p class="news-meta">
+                        <span><i class="far fa-calendar"></i> 13 de Novembro, 2025</span>
+                        <span><i class="far fa-user"></i> Por João Silva</span>
+                    </p>
+                    <p class="news-excerpt">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                    </p>
+                    <button class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></button>
+                    <button class="favorite-btn" data-id="featured">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grade de Notícias -->
+    <section class="news-section">
+        <div class="container">
+            <h2 class="section-title">Últimas Notícias</h2>
+            <div class="news-grid" id="newsGrid">
+                <!-- As notícias serão inseridas aqui via JavaScript -->
+            </div>
+            
+            <div class="load-more">
+                <button class="load-more-btn" id="loadMoreBtn">
+                    Carregar mais notícias <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Favoritos -->
+    <section class="favorites-section" id="favoritos">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-heart"></i> Minhas Notícias Favoritas
+            </h2>
+            <div class="favorites-grid" id="favoritesGrid">
+                <p class="no-favorites">Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Jornal do Commercio</h3>
+                    <p>Seu portal de notícias atualizado em tempo real.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Categorias</h4>
+                    <ul>
+                        <li><a href="#">Política</a></li>
+                        <li><a href="#">Economia</a></li>
+                        <li><a href="#">Esportes</a></li>
+                        <li><a href="#">Tecnologia</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Institucional</h4>
+                    <ul>
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Receba as principais notícias no seu e-mail</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Seu e-mail">
+                        <button><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Jornal do Commercio. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'athena/js/script.js' %}"></script>
 </body>
 </html>
