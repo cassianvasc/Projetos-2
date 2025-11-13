@@ -29,23 +29,35 @@
                     <button class="theme-toggle" id="themeToggle" title="Alternar tema">
                         <i class="fas fa-moon"></i>
                     </button>
+
+                    <!-- Ícone de usuário -->
+                    <a name="user" href="{% url 'UserAccount' %}" class="user-icon" title="Usuário">
+                        <i class="fas fa-user"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Barra de Busca -->
-    <section class="search-section">
-        <div class="container">
-            <div class="search-bar">
-                <form method="get" action="{% url 'pesquisa' %}">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="BarraDePesquisa" id="searchInput" placeholder="Buscar notícias...">
-                    <button type="submit" class="search-btn" id="searchBtn">Buscar</button>
-                </form>
-            </div>
+<section class="search-section">
+    <div class="container">
+        <div class="search-bar">
+            <form method="get" action="{% url 'pesquisa' %}">
+                <i class="fas fa-search"></i>
+
+                <input 
+                    type="text" 
+                    name="BarraDePesquisa" 
+                    id="searchInput" 
+                    placeholder="Buscar notícias..."
+                >
+
+                <button type="submit" class="search-btn">Buscar</button>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Categorias -->
     <section class="categories-section">

@@ -42,7 +42,7 @@ urlpatterns = [
 
     path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
 
-    path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'),
+    path('user/',views.UserAccountPage, name='UserAccount'),
 
     path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
 
