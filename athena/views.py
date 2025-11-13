@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Tag
-from Jornalista.models import Noticia
-
+from .models import Noticia, Tag
+from django.shortcuts import render
 from django.shortcuts import render,redirect
 
 from django.contrib.auth.models import User
@@ -120,7 +119,6 @@ def NoticiaPage(request,noticiaId):
 
     return render(request, 'athena/noticia.html',{'noticia': noticia})
 
-
 def PesquisarPorNoticiaPage(request):
     termo = request.GET.get("BarraDePesquisa",'').strip()
 
@@ -135,14 +133,16 @@ def PesquisarPorNoticiaPage(request):
 
     return render(request, 'athena/pesquisa.html',{'noticias':noticias,'termo':termo})
 
-
-
 def noticias_por_tag(request, tag_slug=None):
 
-    tag = get_object_or_404(Tag,slug=tag_slug)
+    noticias = Noticia.objects.all().order_by('-data_postagem')
 
-    noticias = Noticia.objects.filter(tags=tag).order_by('-data_postagem')
-    
+    if tag_slug != None:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        noticias = noticias.filter(tags=tag)
+    else:
+        tag = Tag(nome="Todas", slug="todas")
+
     context = {
         'tag': tag,
         'noticias': noticias
@@ -157,10 +157,10 @@ def set_location(request):
         latitude = data.get('latitude')
         longitude = data.get('longitude')
 
-        # Você pode salvar na sessão do usuário
         request.session['latitude'] = latitude
         request.session['longitude'] = longitude
 
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'fail'}, status=400)
+
 # Create your views here.

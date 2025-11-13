@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.urls import path
 
 from athena import views
+from Podcast_Player import views as views_podcast
+
+app_name = 'athena'
 
 urlpatterns = [
+    path('', views.home_page, name='home_page'),
+
     path('admin/', admin.site.urls),
 
     path('tag/<slug:tag_slug>/', views.noticias_por_tag, name='noticias_por_tag'),
@@ -29,13 +34,17 @@ urlpatterns = [
 
     path('', views.home_page,name='home'),
 
-    path('set-location/', views.set_location, name='set_location'),
-    
-    path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
-
     path('login/',views.loginPage,name='login'),
 
     path('register/',views.registerPage,name='register'),
 
+    path('set-location/', views.set_location, name='set_location'), 
+
+    path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
+
     path('user/<int:usuario_id>/',views.UserAccountPage,name='UserAccount'),
+
+    path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
+
+    path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
 ]

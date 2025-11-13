@@ -11,7 +11,7 @@ class Perfil(models.Model):
         return f"{self.user.username}"
 
 class Noticia(models.Model):
-    jornalista = models.ForeignKey(Perfil, on_delete=models.CASCADE)
+    autor = models.ForeignKey(Perfil, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=50)
     conteudo = RichTextField()
     data_postagem = models.DateTimeField(auto_now_add=True)

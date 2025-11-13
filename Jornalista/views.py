@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from Podcast_Player.models import LivePodcast
 
 from .models import Post
 from .forms import PostCreateform, UpdatePostForm
@@ -34,3 +35,12 @@ class atualizar_texto(request):
         if self.request.user == post.user:
             return True
         return False
+    
+def sua_view_da_home(request):
+    podcasts_ao_vivo = LivePodcast.objects.filter(is_live=True).order_by('-created_at')[:5]
+    contexto = {
+    'usuario': request.user, 
+    }
+    contexto['live_podcasts'] = podcasts_ao_vivo
+    
+    return render(request, 'home.html', contexto)
