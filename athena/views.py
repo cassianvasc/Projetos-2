@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Noticia, Tag
+from .models import Tag
 from django.shortcuts import render
 from django.shortcuts import render,redirect
+from django.apps import apps
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
@@ -12,6 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from math import radians, cos, sin, asin, sqrt
 import json
 import random
+
+Noticia = apps.get_model('Jornalista', 'Noticia')
 
 def haversine(lat1, lon1, lat2, lon2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
