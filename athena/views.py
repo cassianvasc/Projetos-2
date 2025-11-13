@@ -8,14 +8,48 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from .models import *
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from math import radians, cos, sin, asin, sqrt
+import json
 import random
+
+def haversine(lat1, lon1, lat2, lon2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    r = 6371
+    return c * r
 
 def home_page(request):
     user = request.user
-    noticias_recentes = Noticia.objects.order_by('-data_postagem')[:20]
-    noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+    latitude = request.session.get('latitude')
+    longitude = request.session.get('longitude')
 
-    return render(request, "athena/home.html",{'usuario': user,'noticias':noticias})
+    noticias_recentes = Noticia.objects.order_by('-data_postagem')[:50]
+    
+    print(f"localização:{latitude},{longitude}")
+
+    if latitude and longitude:
+        noticias_proximas = [
+            n for n in noticias_recentes
+            if n.latitude and n.longitude and haversine(latitude, longitude, n.latitude, n.longitude) <= 50
+        ]
+        if noticias_proximas:
+            noticias = random.sample(noticias_proximas, min(5, len(noticias_proximas)))
+        else:
+            noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+    else:
+        noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+    
+    context = {
+        'usuario': user,
+        'noticias': noticias,
+        'logado': user.is_authenticated
+    }
+    return render(request, "athena/home.html", context)
 
 def loginPage(request):
     context = {}
@@ -116,6 +150,17 @@ def noticias_por_tag(request, tag_slug=None):
     
     return render(request, 'athena/noticias_por_tag.html', context)
 
+@csrf_exempt  
+def set_location(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
 
+        # Você pode salvar na sessão do usuário
+        request.session['latitude'] = latitude
+        request.session['longitude'] = longitude
 
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'fail'}, status=400)
 # Create your views here.

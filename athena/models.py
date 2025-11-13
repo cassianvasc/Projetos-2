@@ -1,4 +1,5 @@
 from django.db import models
+from Jornalista.models import Noticia
 from django.contrib.auth.models import User 
 from django.utils.text import slugify
 
@@ -22,8 +23,11 @@ class Tag(models.Model):
 
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="perfil")
-
     tags = models.ManyToManyField(Tag, related_name='perfilComTag')
+    relevantes = models.ManyToManyField(Noticia, related_name='PerfilComNoticia')
+
+    latitude = models.FloatField(null=True,blank=True)
+    longitude = models.FloatField(null=True,blank=True)
 
     def __str__(self):
        return f"Perfil de {self.user.username}"

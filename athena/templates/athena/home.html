@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
+    {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,19 +23,20 @@
     <h1>Últimas notícias</h1>
 
     <ul>
-    {% for noticia in noticias %}
-        <li>
-            <p>noticia {{noticia.id}}</p>
-            <a href="{% url 'noticia' noticia.id %}"><h2>{{ noticia.titulo }}</h2></a>
-            <p>{{ noticia.conteudo|truncatechars:150|safe }}</p>
-        </li>
-    {% empty %}
-        <li>Nenhuma notícia disponível.</li>
-    {% endfor %}
+        {% for noticia in noticias %}
+            <li>
+                <a href="{% url 'noticia' noticia.id %}"><h2>{{ noticia.titulo }}</h2></a>
+                <p>{{ noticia.conteudo|truncatechars:150|safe }}</p>
+            </li>
+        {% empty %}
+            <li>Nenhuma notícia disponível.</li>
+        {% endfor %}
     </ul>
 
     <a href="{% url 'login' %}" >Logue</a>
     <a href="{% url 'register' %}" >Registre</a>
-
+    
+    <script src='{% static "js/GetGeoLocation.js" %}'></script>
+    
 </body>
 </html>

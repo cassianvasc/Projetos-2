@@ -29,6 +29,8 @@ urlpatterns = [
 
     path('', views.home_page,name='home'),
 
+    path('set-location/', views.set_location, name='set_location'),
+    
     path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
 
     path('login/',views.loginPage,name='login'),
