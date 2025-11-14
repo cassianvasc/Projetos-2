@@ -1,0 +1,260 @@
+/* ===== VARIÁVEIS - PALETA DE CORES PRIMÁRIAS ===== */
+:root {
+    --vermelho: #E63946;
+    --amarelo: #F4A261;
+    --azul: #457B9D;
+    --laranja: #E76F51;
+    --branco: #FFFFFF;
+    --cinza-claro: #F8F9FA;
+    --cinza-medio: #E9ECEF;
+    --cinza-escuro: #495057;
+    --preto: #1D3557;
+}
+
+/* ===== RESET E BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--azul) 0%, var(--preto) 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== FORMAS GEOMÉTRICAS DECORATIVAS ===== */
+body::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: var(--vermelho);
+    border-radius: 50%;
+    top: -200px;
+    right: -200px;
+    opacity: 0.1;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: var(--amarelo);
+    border-radius: 50%;
+    bottom: -150px;
+    left: -150px;
+    opacity: 0.1;
+}
+
+/* ===== FORMULÁRIO - COMPOSIÇÃO EQUILIBRADA ===== */
+form {
+    background-color: var(--branco);
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    z-index: 10;
+    animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== TÍTULO/LOGO IMPLÍCITO ===== */
+form::before {
+    content: '🔐';
+    font-size: 3rem;
+    display: block;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== LABELS - TIPOGRAFIA EQUILIBRADA ===== */
+label {
+    display: block;
+    color: var(--preto);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+label:first-of-type {
+    margin-top: 0;
+}
+
+/* ===== INPUTS - FORMAS GEOMÉTRICAS SIMPLES ===== */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 2px solid var(--cinza-medio);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--preto);
+    background-color: var(--cinza-claro);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: var(--azul);
+    background-color: var(--branco);
+    box-shadow: 0 0 0 4px rgba(69, 123, 157, 0.1);
+    transform: translateY(-2px);
+}
+
+input[type="text"]::placeholder,
+input[type="password"]::placeholder {
+    color: var(--cinza-escuro);
+    opacity: 0.6;
+}
+
+/* ===== BOTÃO - FORMA EQUILIBRADA COM ENERGIA ===== */
+.entry_button {
+    width: 100%;
+    padding: 1.2rem;
+    margin-top: 2rem;
+    background: linear-gradient(135deg, var(--vermelho) 0%, var(--laranja) 100%);
+    color: var(--branco);
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 20px rgba(230, 57, 70, 0.3);
+}
+
+.entry_button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(230, 57, 70, 0.4);
+    background: linear-gradient(135deg, var(--laranja) 0%, var(--vermelho) 100%);
+}
+
+.entry_button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3);
+}
+
+/* ===== LINK DE REGISTRO - MINIMALISTA ===== */
+a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--branco);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1rem 2.5rem;
+    border: 2px solid var(--branco);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+    letter-spacing: 0.5px;
+}
+
+a:hover {
+    background-color: var(--amarelo);
+    border-color: var(--amarelo);
+    color: var(--preto);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 162, 97, 0.4);
+}
+
+/* ===== MENSAGEM DE ERRO - DESTAQUE VERMELHO ===== */
+p {
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background-color: rgba(230, 57, 70, 0.1);
+    border-left: 4px solid var(--vermelho);
+    border-radius: 8px;
+    color: var(--vermelho);
+    font-weight: 600;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    z-index: 10;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+p:empty {
+    display: none;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 480px) {
+    form {
+        padding: 2rem 1.5rem;
+    }
+
+    form::before {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        padding: 0.9rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .entry_button {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    a {
+        padding: 0.9rem 2rem;
+        font-size: 0.95rem;
+    }
+
+    body::before,
+    body::after {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+/* ===== ACESSIBILIDADE - FOCO VISÍVEL ===== */
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid var(--amarelo);
+    outline-offset: 2px;
+}
