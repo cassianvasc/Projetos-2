@@ -22,8 +22,8 @@ class Tag(models.Model):
 
 class Perfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="perfil")
-    tags = models.ManyToManyField(Tag, related_name='perfilComTag')
-    relevantes = models.ManyToManyField('Jornalista.Noticia', related_name='PerfilComNoticia')
+    tags = models.ManyToManyField(Tag,blank=True,related_name='perfilComTag')
+    relevantes = models.ManyToManyField('Jornalista.Noticia',blank=True,related_name='PerfilComNoticia')
 
     latitude = models.FloatField(null=True,blank=True)
     longitude = models.FloatField(null=True,blank=True)

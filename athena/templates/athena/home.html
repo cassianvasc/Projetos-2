@@ -26,10 +26,24 @@
                 </nav>
 
                 <div class="header-actions">
+
+                    <!-- Tema -->
                     <button class="theme-toggle" id="themeToggle" title="Alternar tema">
                         <i class="fas fa-moon"></i>
                     </button>
+
+                    <!-- Minha Conta -->
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i> Minha Conta
+                    </a>
+
+                    <!-- Login -->
+                    <a href="{% url 'login' %}" class="header-btn login-btn">
+                        <i class="fas fa-right-to-bracket"></i> Login
+                    </a>
+
                 </div>
+
             </div>
         </div>
     </header>

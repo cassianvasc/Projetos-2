@@ -5,7 +5,7 @@ admin.site.register(Perfil)
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
-    fields = ('jornalista', 'titulo', 'conteudo', 'tags', 'regiao')
+    fields = ('autor', 'titulo', 'conteudo', 'tags', 'regiao')
     
     exclude = ('latitude', 'longitude')
     

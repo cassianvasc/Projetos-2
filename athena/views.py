@@ -95,15 +95,12 @@ def registerPage(request):
     
     return render(request, "athena/register.html",context)
 
-def UserAccountPage(request,usuario_id=None):
+def UserAccountPage(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
     user = request.user
     perfil = user.perfil
-
-    if usuario_id is None or usuario_id != user.id:
-        return redirect('UserAccount',usuario_id=user.id)
 
     if request.method == 'POST':
         selectedTagsIds = request.POST.getlist('tags')
@@ -111,7 +108,7 @@ def UserAccountPage(request,usuario_id=None):
 
         perfil.tags.set(selectedTags)
 
-        return redirect('UserAccount',user.id)
+        return redirect('UserAccount')
 
     tags = Tag.objects.all()
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
