@@ -1,14 +1,14 @@
 /* ===== VARIÁVEIS - PALETA DE CORES PRIMÁRIAS ===== */
 :root {
-    --vermelho: #E63946;
-    --amarelo: #F4A261;
-    --azul: #457B9D;
-    --laranja: #E76F51;
+ --vermelho: #BE1311;
+    --amarelo: #F9CD0A;
+    --azul: #182E5F;
+    --laranja: #E4641D;
     --branco: #FFFFFF;
     --cinza-claro: #F8F9FA;
     --cinza-medio: #E9ECEF;
     --cinza-escuro: #495057;
-    --preto: #1D3557;
+    --preto: #182E5F;
 }
 
 /* ===== RESET E BASE ===== */
