@@ -10,22 +10,64 @@
 </head>
 <body>
 
-    <form method="POST">
-        {% csrf_token %}    
+    <!-- Logo no topo -->
+    <div class="logo">
+        <img src="{% static 'images/athena-logo.png' %}" alt="Athena">
+    </div>
 
-        <label for="Login">Digite um login:</label>
-        <input type="text" name="username" placeholder="Nome de usuario">
+    <div class="container">
+        <h1 class="text-center">Criar Conta</h1>
+        
+        <div class="divider divider-red"></div>
 
-        <label for="Email">Digite um email:</label>
-        <input type="email" name="email" placeholder="exemplo@gmail.com">
+        <form method="POST" class="spacing-medium">
+            {% csrf_token %}
 
-        <label for="Senha">Digite uma senha:</label>
-        <input type="password" name="password" placeholder="Senha">
+            <div class="form-group">
+                <label for="username">Digite um login</label>
+                <input type="text" 
+                       id="username" 
+                       name="username" 
+                       placeholder="Nome de usuário" 
+                       class="form-input"
+                       required>
+            </div>
 
-        <button type="submit" class="entry_button">enviar</button>
-    </form>
-    
-    <p>{{ error }}</p>
+            <div class="form-group">
+                <label for="email">Digite um email</label>
+                <input type="email" 
+                       id="email" 
+                       name="email" 
+                       placeholder="exemplo@gmail.com" 
+                       class="form-input"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Digite uma senha</label>
+                <input type="password" 
+                       id="password" 
+                       name="password" 
+                       placeholder="Senha" 
+                       class="form-input"
+                       required>
+            </div>
+
+            {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary btn-full">Enviar</button>
+        </form>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            Já tem uma conta? <a href="#">Faça login</a>
+        </p>
+    </div>
 
 </body>
 </html>
