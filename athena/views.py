@@ -4,6 +4,7 @@ from .forms import NoticiaForm
 from django.shortcuts import render
 from django.shortcuts import render,redirect
 from django.apps import apps
+from django.core.paginator import Paginator
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
@@ -170,10 +171,10 @@ def AddNoticiaPage(request):
     user = request.user
 
     if not hasattr(user, "perfil_jornalista"):
-        return redirect("home")  # faltava return
+        return redirect("home")
 
     if request.method == "POST":
-        form = NoticiaForm(request.POST, request.FILES)  # <-- CORREÇÃO AQUI
+        form = NoticiaForm(request.POST, request.FILES)  
         if form.is_valid():
             noticia = form.save(commit=False)
             noticia.autor = user.perfil_jornalista
@@ -185,5 +186,31 @@ def AddNoticiaPage(request):
 
     return render(request, 'athena/addNoticia.html', {"form": form})
 
+def load_more_news(request):
+    page = int(request.GET.get("page", 1))
+    noticias_recentes = Noticia.objects.order_by("-data_postagem")
 
+    paginator = Paginator(noticias_recentes, 5)
+
+    try:
+        noticias = paginator.page(page)
+    except:
+        return JsonResponse({"noticias": [], "has_next": False})
+
+    data = []
+    for n in noticias:
+        data.append({
+            "id": n.id,
+            "titulo": n.titulo,
+            "excerpt": n.conteudo[:150] + "...",
+            "data": n.data_postagem.strftime("%d/%m/%Y"),
+            "autor": str(n.autor) if n.autor else "",
+            "tag": n.tag.nome if hasattr(n, "tag") else "",
+            "imagem": n.imagem.url if n.imagem else None
+        })
+
+    return JsonResponse({
+        "noticias": data,
+        "has_next": noticias.has_next()
+    })
 # Create your views here.
