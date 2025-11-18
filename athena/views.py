@@ -101,6 +101,7 @@ def UserAccountPage(request):
     
     user = request.user
     perfil = user.perfil
+    context = None
 
     if request.method == 'POST':
         selectedTagsIds = request.POST.getlist('tags')
@@ -108,10 +109,10 @@ def UserAccountPage(request):
 
         perfil.tags.set(selectedTags)
 
-        return redirect('UserAccount')
+        context = "Salvo com sucesso"
 
     tags = Tag.objects.all()
-    return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
+    return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags,'context':context})
 
 def NoticiaPage(request,noticiaId):
 
