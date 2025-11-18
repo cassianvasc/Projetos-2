@@ -27,7 +27,7 @@
 
                 <nav class="nav-menu" aria-label="Menu principal">
                     <ul>
-                        <li><a href="{% url 'home_page' %}" class="active">Início</a></li>
+                        <li><a href="{% url 'home' %}" class="active">Início</a></li>
                         <li><a href="#favoritos">Favoritos</a></li>
                         <li><a href="#sobre">Sobre</a></li>
                     </ul>
@@ -60,7 +60,7 @@
                     <form method="get" action="{% url 'pesquisa' %}">
                         <i class="fas fa-search" aria-hidden="true"></i>
                         <label for="searchInput" class="sr-only">Buscar notícias</label>
-                        <input type="text" name="q" id="searchInput" placeholder="Buscar notícias..." />
+                        <input type="text" name="BarraDePesquisa" id="searchInput" placeholder="Buscar notícias..." />
                         <button type="submit" class="search-btn" id="searchBtn">Buscar</button>
                     </form>
                 </div>
@@ -71,7 +71,7 @@
         <section class="categories-section">
             <div class="container">
                 <div class="categories">
-                    <a href="{% url 'home_page' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
+                    <a href="{% url 'home' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
                     <a href="{% url 'noticias_por_tag' 'politica' %}"><button class="category-btn" data-category="politica">Política</button></a>
                     <a href="{% url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
                     <a href="{% url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>

@@ -23,14 +23,13 @@ from Podcast_Player import views as views_podcast
 app_name = 'athena'
 
 urlpatterns = [
-    path('', views.home_page, name='home_page'),
 
     path('admin/', admin.site.urls),
 
     path('tag/<slug:tag_slug>/', views.noticias_por_tag, name='noticias_por_tag'),
     path('tag/', views.noticias_por_tag, name='noticias_por_tag'),
     
-    path('pesquisa', views.PesquisarPorNoticiaPage , name='pesquisa'),
+    path('pesquisa/', views.PesquisarPorNoticiaPage , name='pesquisa'),
 
     path('', views.home_page,name='home'),
 
