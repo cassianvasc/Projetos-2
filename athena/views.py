@@ -168,11 +168,12 @@ def set_location(request):
 
 def AddNoticiaPage(request):
     user = request.user
-    if not hasattr(user,"perfil_jornalista"):
-        redirect("home")
+
+    if not hasattr(user, "perfil_jornalista"):
+        return redirect("home")  # faltava return
 
     if request.method == "POST":
-        form = NoticiaForm(request.POST)
+        form = NoticiaForm(request.POST, request.FILES)  # <-- CORREÇÃO AQUI
         if form.is_valid():
             noticia = form.save(commit=False)
             noticia.autor = user.perfil_jornalista
@@ -183,5 +184,6 @@ def AddNoticiaPage(request):
         form = NoticiaForm()
 
     return render(request, 'athena/addNoticia.html', {"form": form})
+
 
 # Create your views here.

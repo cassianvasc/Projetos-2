@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>adicionar Noticia</title>
+    <title>Adicionar Notícia</title>
 </head>
 <body>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
     
         <div class="form-group">
@@ -35,7 +35,17 @@
                    class="form-input">
         </div>
 
-        <!-- 🔥 CAMPO DE TAGS -->
+        <!-- CAMPO DE IMAGEM -->
+        <div class="form-group">
+            <label for="id_imagem">Imagem da notícia</label>
+            <input type="file"
+                   id="id_imagem"
+                   name="imagem"
+                   accept="image/*"
+                   class="form-input">
+        </div>
+
+        <!-- TAGS -->
         <div class="form-group">
             <label for="id_tags">Tags</label>
             {{ form.tags }}

@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from athena import views
 from Podcast_Player import views as views_podcast
@@ -48,4 +50,4 @@ urlpatterns = [
     path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
 
     path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
