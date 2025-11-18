@@ -14,6 +14,7 @@ class Noticia(models.Model):
     autor = models.ForeignKey(Perfil, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=50)
     conteudo = RichTextField()
+    imagem = models.ImageField(upload_to='noticias/', blank=True, null=True)
     data_postagem = models.DateTimeField(auto_now_add=True)
     data_atualizada = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField('athena.Tag', related_name='NoticiaComTag',blank=True)
