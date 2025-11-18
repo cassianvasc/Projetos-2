@@ -38,4 +38,6 @@ class Noticia(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.titulo} {self.jornalista.user.username}"
+        return f"{self.titulo} {self.autor.user.username}"
+    
+

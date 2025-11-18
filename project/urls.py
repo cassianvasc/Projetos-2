@@ -47,4 +47,6 @@ urlpatterns = [
     path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
 
     path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
+
+    path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
 ]

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Tag
+from .forms import NoticiaForm
 from django.shortcuts import render
 from django.shortcuts import render,redirect
 from django.apps import apps
@@ -49,7 +50,8 @@ def home_page(request):
     context = {
         'usuario': user,
         'noticias': noticias,
-        'logado': user.is_authenticated
+        'logado': user.is_authenticated,
+        'jornalista': hasattr(user, "perfil_jornalista"),
     }
     return render(request, "athena/home.html", context)
 
@@ -163,5 +165,23 @@ def set_location(request):
 
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'fail'}, status=400)
+
+def AddNoticiaPage(request):
+    user = request.user
+    if not hasattr(user,"perfil_jornalista"):
+        redirect("home")
+
+    if request.method == "POST":
+        form = NoticiaForm(request.POST)
+        if form.is_valid():
+            noticia = form.save(commit=False)
+            noticia.autor = user.perfil_jornalista
+            noticia.save()
+            form.save_m2m()
+            return redirect("home")
+    else:
+        form = NoticiaForm()
+
+    return render(request, 'athena/addNoticia.html', {"form": form})
 
 # Create your views here.
