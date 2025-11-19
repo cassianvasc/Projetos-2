@@ -20,7 +20,7 @@
             {% for noticia in noticias %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ noticia.titulo }}</h5>
+                        <h5 name="{{ noticia.titulo }}" class="card-title">{{ noticia.titulo }}</h5>
                         
                         <div class="tags-list">
                             {% for t in noticia.tags.all %}
@@ -43,7 +43,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <p>Não há notícias relacionadas com "{{ termo }}".</p>
+            <p name="context">Não há notícias relacionadas com "{{ termo }}".</p>
         {% endif %}
 
         <a href="{% url 'home' %}">← Home</a>

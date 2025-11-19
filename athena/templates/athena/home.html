@@ -35,7 +35,7 @@
                 </nav>
 
                 <div class="header-actions">
-                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                    <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
                         <i class="fas fa-user"></i> Minha Conta
                     </a>
 
@@ -137,7 +137,7 @@
                             </p>
                             <p class="news-excerpt">{{ noticia.conteudo|truncatewords:25|safe }}</p>
 
-                            <a href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
+                            <a name="{{ noticia.id }}" href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
 
                             <button class="favorite-btn" data-id="{{ noticia.id }}" aria-label="Adicionar aos favoritos">
                                 <i class="far fa-heart"></i>

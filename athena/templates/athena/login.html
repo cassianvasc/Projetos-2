@@ -24,7 +24,9 @@
 
     <a href="{% url 'register' %}">Registre</a>
 
-    <p>{{ error }}</p>
+    {% if error %}
+        <p name="erro">{{ error }}</p>
+    {% endif %}
 
 </body>
 </html>
