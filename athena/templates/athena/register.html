@@ -53,23 +53,28 @@
                 </div>
 
 
-                <div class="auth-input-group">
-                    <label for="id_password">Senha</label>
-                    <div class="auth-input-with-icon">
-                        <i class="fas fa-lock"></i>
-                        <input id="id_password"
-                               type="password"
-                               name="password"
-                               placeholder="Crie uma senha"
-                               required>
-                        <button type="button"
-                                class="toggle-password"
-                                aria-label="Mostrar ou ocultar senha">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-
+                        <div class="auth-input-group">
+                            <label for="id_password">Senha</label>
+                            <div class="auth-input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input id="id_password"
+                                    type="password"
+                                    name="password"
+                                    placeholder="Crie uma senha"
+                                    required
+                                    pattern="(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{6,}"
+                                    title="A senha deve ter pelo menos 1 letra maiúscula e 1 caractere especial.">
+                                <button type="button"
+                                        class="toggle-password"
+                                        aria-label="Mostrar ou ocultar senha">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="auth-hint">
+                                A senha deve ter pelo menos <strong>1 letra maiúscula</strong> e
+                                <strong>1 caractere especial</strong> (ex: ! @ # $ % & *).
+                            </small>
+                        </div>
                 {% if error %}
                     <p class="auth-error">{{ error }}</p>
                 {% endif %}
