@@ -87,9 +87,10 @@ def registerPage(request):
             context['error'] = "um usuario com esse nome ja existe"
 
             return render(request, "athena/register.html",context)
-    
-        user = User.objects.create_user(username = name,email = email, password = password)
-        Perfil.objects.create(user = user)
+            
+        user = User.objects.create_user(username=name, email=email, password=password)
+
+        Perfil.objects.create(user=user)
 
         return redirect('login')
     

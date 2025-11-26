@@ -68,7 +68,7 @@ class TesteE2E(LiveServerTestCase):
 
         self.browser.get(f'{self.live_server_url}/register/')
 
-        self.assertIn('Digite um login:',self.browser.page_source)
+        self.assertIn('Já tem uma conta?',self.browser.page_source)
 
         usernameInput = self.browser.find_element(By.NAME,'username')
         emailInput = self.browser.find_element(By.NAME,'email')
@@ -76,8 +76,12 @@ class TesteE2E(LiveServerTestCase):
 
         usernameInput.send_keys('teste')
         emailInput.send_keys('a@gmail.com')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,"username"))
+        )
 
         self.assertTrue(User.objects.filter(username='teste').exists())
 
@@ -89,7 +93,7 @@ class TesteE2E(LiveServerTestCase):
         passwordInput = self.browser.find_element(By.NAME,'password')
 
         usernameInput.send_keys('Erro')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
 
         WebDriverWait(self.browser,10).until(
@@ -101,7 +105,7 @@ class TesteE2E(LiveServerTestCase):
         passwordInput = self.browser.find_element(By.NAME,'password')
 
         usernameInput.send_keys('teste')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
 
         WebDriverWait(self.browser, 10).until(
