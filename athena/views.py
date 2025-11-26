@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Tag
+from .forms import NoticiaForm
 from django.shortcuts import render
 from django.shortcuts import render,redirect
 from django.apps import apps
+from django.core.paginator import Paginator
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
@@ -49,7 +51,8 @@ def home_page(request):
     context = {
         'usuario': user,
         'noticias': noticias,
-        'logado': user.is_authenticated
+        'logado': user.is_authenticated,
+        'jornalista': hasattr(user, "perfil_jornalista"),
     }
     return render(request, "athena/home.html", context)
 
@@ -87,10 +90,9 @@ def registerPage(request):
             context['error'] = "um usuario com esse nome ja existe"
 
             return render(request, "athena/register.html",context)
-            
-        user = User.objects.create_user(username=name, email=email, password=password)
-
-        Perfil.objects.create(user=user)
+    
+        user = User.objects.create_user(username = name,email = email, password = password)
+        Perfil.objects.create(user = user)
 
         return redirect('login')
     
@@ -102,6 +104,7 @@ def UserAccountPage(request):
     
     user = request.user
     perfil = user.perfil
+    context = None
 
     if request.method == 'POST':
         selectedTagsIds = request.POST.getlist('tags')
@@ -109,10 +112,10 @@ def UserAccountPage(request):
 
         perfil.tags.set(selectedTags)
 
-        return redirect('UserAccount')
+        context = "Salvo com sucesso"
 
     tags = Tag.objects.all()
-    return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags})
+    return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags,'context':context})
 
 def NoticiaPage(request,noticiaId):
 
@@ -164,4 +167,50 @@ def set_location(request):
         return JsonResponse({'status': 'ok'})
     return JsonResponse({'status': 'fail'}, status=400)
 
+def AddNoticiaPage(request):
+    user = request.user
+
+    if not hasattr(user, "perfil_jornalista"):
+        return redirect("home")
+
+    if request.method == "POST":
+        form = NoticiaForm(request.POST, request.FILES)  
+        if form.is_valid():
+            noticia = form.save(commit=False)
+            noticia.autor = user.perfil_jornalista
+            noticia.save()
+            form.save_m2m()
+            return redirect("home")
+    else:
+        form = NoticiaForm()
+
+    return render(request, 'athena/addNoticia.html', {"form": form})
+
+def load_more_news(request):
+    page = int(request.GET.get("page", 1))
+    noticias_recentes = Noticia.objects.order_by("-data_postagem")
+
+    paginator = Paginator(noticias_recentes, 5)
+
+    try:
+        noticias = paginator.page(page)
+    except:
+        return JsonResponse({"noticias": [], "has_next": False})
+
+    data = []
+    for n in noticias:
+        data.append({
+            "id": n.id,
+            "titulo": n.titulo,
+            "excerpt": n.conteudo[:150] + "...",
+            "data": n.data_postagem.strftime("%d/%m/%Y"),
+            "autor": str(n.autor) if n.autor else "",
+            "tag": n.tag.nome if hasattr(n, "tag") else "",
+            "imagem": n.imagem.url if n.imagem else None
+        })
+
+    return JsonResponse({
+        "noticias": data,
+        "has_next": noticias.has_next()
+    })
 # Create your views here.

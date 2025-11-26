@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from athena import views
 from Podcast_Player import views as views_podcast
@@ -23,14 +25,13 @@ from Podcast_Player import views as views_podcast
 app_name = 'athena'
 
 urlpatterns = [
-    path('', views.home_page, name='home_page'),
 
     path('admin/', admin.site.urls),
 
     path('tag/<slug:tag_slug>/', views.noticias_por_tag, name='noticias_por_tag'),
     path('tag/', views.noticias_por_tag, name='noticias_por_tag'),
     
-    path('pesquisa', views.PesquisarPorNoticiaPage , name='pesquisa'),
+    path('pesquisa/', views.PesquisarPorNoticiaPage , name='pesquisa'),
 
     path('', views.home_page,name='home'),
 
@@ -42,9 +43,13 @@ urlpatterns = [
 
     path('noticia/<int:noticiaId>/', views.NoticiaPage, name='noticia'),
 
-    path('user/',views.UserAccountPage, name='UserAccount'),
+    path('user/',views.UserAccountPage,name='UserAccount'),
+
+    path("load-more-news/", views.load_more_news, name="load_more_news"),
 
     path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
 
     path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
-]
+
+    path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

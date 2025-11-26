@@ -4,213 +4,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jornal do Comercio - Portal de Notícias</title>
+    <title>Jornal do Commercio - Portal de Notícias</title>
     <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="{% static 'js/load_more_news.js' %}"></script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
+    <!-- Blocos de anúncio (aparecem apenas em telas grandes) -->
+    <div class="ad-left" aria-hidden="true">
+        <div class="ad-inner">Publicidade</div>
+    </div>
+    <div class="ad-right" aria-hidden="true">
+        <div class="ad-inner">Publicidade</div>
+    </div>
+
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container header-content">
                 <div class="logo">
-                    <h1><i class="fas fa-newspaper"></i> Jornal do Comercio</h1>
+                    <h1><i class="fas fa-newspaper"></i> Jornal do Commercio</h1>
                 </div>
-                
-                <nav class="nav-menu">
+
+                <nav class="nav-menu" aria-label="Menu principal">
                     <ul>
-                        <li><a href="{% url 'home_page' %}" class="active">Início</a></li>
+                        <li><a href="{% url 'home' %}" class="active">Início</a></li>
                         <li><a href="#favoritos">Favoritos</a></li>
                         <li><a href="#sobre">Sobre</a></li>
                     </ul>
                 </nav>
 
                 <div class="header-actions">
-                    <button class="theme-toggle" id="themeToggle" title="Alternar tema">
-                        <i class="fas fa-moon"></i>
-                    </button>
-
-                    <!-- Ícone de usuário -->
-                    <a name="user" href="{% url 'UserAccount' %}" class="user-icon" title="Usuário">
-                        <i class="fas fa-user"></i>
+                    <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i> Minha Conta
                     </a>
+
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="header-btn login-btn">
+                        <i class="fas fa-right-to-bracket"></i> Login
+                    </a>
+                    {% endif %}
+
+                    {% if jornalista %}
+                    <a href="{% url 'addNoticia' %}" class="header-btn login-btn">
+                        <i class="fas fa-right-to-bracket"></i> Adicionar Noticia
+                    </a>
+                    {% endif %}
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Barra de Busca -->
-<section class="search-section">
-    <div class="container">
-        <div class="search-bar">
-            <form method="get" action="{% url 'pesquisa' %}">
-                <i class="fas fa-search"></i>
-
-                <input 
-                    type="text" 
-                    name="BarraDePesquisa" 
-                    id="searchInput" 
-                    placeholder="Buscar notícias..."
-                >
-
-                <button type="submit" class="search-btn">Buscar</button>
-            </form>
-        </div>
-    </div>
-</section>
-
-    <!-- Categorias -->
-    <section class="categories-section">
-        <div class="container">
-            <div class="categories">
-                <a href="{%  url 'noticias_por_tag' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
-                <a href="{%  url 'noticias_por_tag' 'politica' %}"><button  class="category-btn" data-category="politica">Política</button></a>
-                <a href="{%  url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
-                <a href="{%  url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>
-                <a href="{%  url 'noticias_por_tag' 'tecnologia' %}"><button class="category-btn" data-category="tecnologia">Tecnologia</button></a>
-                <a href="{%  url 'noticias_por_tag' 'cultura' %}"><button class="category-btn" data-category="cultura">Cultura</button></a>
-                <a href="{%  url 'noticias_por_tag' 'mundo' %}"><button class="category-btn" data-category="mundo">Mundo</button></a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Notícia em Destaque -->
-    <section class="featured-section">
-        <div class="container">
-            <div class="featured-news" id="featuredNews">
-                <div class="featured-image">
-                    <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Notícia+em+Destaque" alt="Notícia Principal">
-                    <span class="category-tag">Destaque</span>
-                </div>
-                <div class="featured-content">
-                    <h2>Manchete Principal: Grandes Mudanças no Cenário Nacional</h2>
-                    <p class="news-meta">
-                        <span><i class="far fa-calendar"></i> 13 de Novembro, 2025</span>
-                        <span><i class="far fa-user"></i> Por João Silva</span>
-                    </p>
-                    <p class="news-excerpt">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
-                    </p>
-                    <button class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></button>
-                    <button class="favorite-btn" data-id="featured">
-                        <i class="far fa-heart"></i>
-                    </button>
+        <!-- Barra de Busca -->
+        <section class="search-section">
+            <div class="container">
+                <div class="search-bar">
+                    <form method="get" action="{% url 'pesquisa' %}">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <label for="searchInput" class="sr-only">Buscar notícias</label>
+                        <input type="text" name="BarraDePesquisa" id="searchInput" placeholder="Buscar notícias..." />
+                        <button type="submit" class="search-btn" id="searchBtn">Buscar</button>
+                    </form>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Grade de Notícias -->
-<section class="news-section">
-    <div class="container">
-        <h2 class="section-title">Últimas Notícias</h2>
-        <div class="news-grid" id="newsGrid">
-            {% for noticia in noticias %}
-                <div class="news-card">
-                    <div class="news-image">
-                        {% if noticia.imagem %}
-                            <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
-                        {% else %}
-                            <img src="https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem" alt="Sem imagem">
-                        {% endif %}
-                        {% if noticia.tag %}
-                            <span class="category-tag">{{ noticia.tag|title }}</span>
-                        {% endif %}
+        <!-- Categorias -->
+        <section class="categories-section">
+            <div class="container">
+                <div class="categories">
+                    <a href="{% url 'home' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
+                    <a href="{% url 'noticias_por_tag' 'politica' %}"><button class="category-btn" data-category="politica">Política</button></a>
+                    <a href="{% url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
+                    <a href="{% url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>
+                    <a href="{% url 'noticias_por_tag' 'tecnologia' %}"><button class="category-btn" data-category="tecnologia">Tecnologia</button></a>
+                    <a href="{% url 'noticias_por_tag' 'cultura' %}"><button class="category-btn" data-category="cultura">Cultura</button></a>
+                    <a href="{% url 'noticias_por_tag' 'mundo' %}"><button class="category-btn" data-category="mundo">Mundo</button></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notícia em Destaque -->
+        <section class="featured-section">
+            <div class="container">
+                <div class="featured-news" id="featuredNews">
+                    <div class="featured-image">
+                        <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Notícia+em+Destaque" alt="Notícia Principal">
+                        <span class="category-tag">Destaque</span>
                     </div>
-                    <div class="news-content">
-                        <h3 class="news-title">{{ noticia.titulo }}</h3>
+                    <div class="featured-content">
+                        <h2>Manchete Principal: Grandes Mudanças no Cenário Nacional</h2>
                         <p class="news-meta">
-                            <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \d\e F, Y" }}</span>
-                            {% if noticia.autor %}
-                                <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
-                            {% endif %}
+                            <span><i class="far fa-calendar"></i> 13 de Novembro, 2025</span>
+                            <span><i class="far fa-user"></i> Por João Silva</span>
                         </p>
                         <p class="news-excerpt">
-                            {{ noticia.conteudo|truncatewords:25|safe }}
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                         </p>
-                        <a href="{% url 'noticia' noticia.id %}" class="read-more-btn">
-                            Ler mais <i class="fas fa-arrow-right"></i>
-                        </a>
-                        <button class="favorite-btn" data-id="{{ noticia.id }}">
+                        <a href="#" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
+                        <button class="favorite-btn" data-id="featured" aria-label="Adicionar aos favoritos">
                             <i class="far fa-heart"></i>
                         </button>
                     </div>
                 </div>
-            {% empty %}
-                <p>Nenhuma notícia encontrada no momento.</p>
-            {% endfor %}
-        </div>
-
-        <div class="load-more">
-            <button class="load-more-btn" id="loadMoreBtn">
-                Carregar mais notícias <i class="fas fa-chevron-down"></i>
-            </button>
-        </div>
-    </div>
-</section>
-
-    <!-- Seção de Favoritos -->
-    <section class="favorites-section" id="favoritos">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-heart"></i> Minhas Notícias Favoritas
-            </h2>
-            <div class="favorites-grid" id="favoritesGrid">
-                <p class="no-favorites">Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!</p>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
+        <!-- Grade de Notícias -->
+        <section class="news-section">
+            <div class="container">
+                <h2 class="section-title">Últimas Notícias</h2>
+                <div class="news-grid" id="newsGrid">
+                    {% for noticia in noticias %}
+                    <article class="news-card">
+                        <div class="news-image">
+                            {% if noticia.imagem %}
+                                <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem" alt="Sem imagem">
+                            {% endif %}
+                            {% if noticia.tag %}
+                                <span class="category-tag">{{ noticia.tag|title }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="news-content">
+                            <h3 class="news-title">{{ noticia.titulo }}</h3>
+                            <p class="news-meta">
+                                <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \\d\\e F, Y" }}</span>
+                                {% if noticia.autor %}
+                                    <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
+                                {% endif %}
+                            </p>
+                            <p class="news-excerpt">{{ noticia.conteudo|truncatewords:25|safe }}</p>
+
+                            <a name="{{ noticia.id }}" href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
+
+                            <button class="favorite-btn" data-id="{{ noticia.id }}" aria-label="Adicionar aos favoritos">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </article>
+                    {% empty %}
+                        <p>Nenhuma notícia encontrada no momento.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="load-more">
+                    <button class="load-more-btn" id="loadMoreBtn">Carregar mais notícias <i class="fas fa-chevron-down"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Favoritos -->
+        <section class="favorites-section" id="favoritos">
+            <div class="container">
+                <h2 class="section-title"><i class="fas fa-heart"></i> Minhas Notícias Favoritas</h2>
+                <div class="favorites-grid" id="favoritesGrid">
+                    <p class="no-favorites">Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container footer-content">
                 <div class="footer-section">
                     <h3>Jornal do Commercio</h3>
                     <p>Seu portal de notícias atualizado em tempo real.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/jornaldocommercioPE/" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="https://twitter.com/jc_pe" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/jc_pe" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@JCPlayOficial" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Categorias</h4>
                     <ul>
-                        <li><a href="#">Política</a></li>
-                        <li><a href="#">Economia</a></li>
-                        <li><a href="#">Esportes</a></li>
-                        <li><a href="#">Tecnologia</a></li>
+                        <li><a href="{% url 'noticias_por_tag' 'politica' %}">Política</a></li>
+                        <li><a href="{% url 'noticias_por_tag' 'economia' %}">Economia</a></li>
+                        <li><a href="{% url 'noticias_por_tag' 'esportes' %}">Esportes</a></li>
+                        <li><a href="{% url 'noticias_por_tag' 'tecnologia' %}">Tecnologia</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Institucional</h4>
                     <ul>
-                        <li><a href="#">Sobre Nós</a></li>
-                        <li><a href="#">Contato</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
-                        <li><a href="#">Termos de Uso</a></li>
+                        <li><a href="https://sites.google.com/cesar.school/gp8-jc/in%C3%ADcio">Sobre Nós</a></li>
+                        <li><a href="#privacidade">Política de Privacidade</a></li>
+                        <li><a href="#termos">Termos de Uso</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h4>Newsletter</h4>
                     <p>Receba as principais notícias no seu e-mail</p>
-                    <div class="newsletter-form">
-                        <input type="email" placeholder="Seu e-mail">
-                        <button><i class="fas fa-paper-plane"></i></button>
-                    </div>
+                    <form class="newsletter-form" action="#" method="post">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="Seu e-mail" aria-label="Seu e-mail" required>
+                        <button type="submit" aria-label="Assinar newsletter"><i class="fas fa-paper-plane"></i></button>
+                    </form>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 Jornal do Commercio. Todos os direitos reservados.</p>
             </div>
-        </div>
-    </footer>
+        </footer>
+    </div>
 
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/GetGeoLocation.js' %}"></script>

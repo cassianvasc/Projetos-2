@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Notícia</title>
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+    
+        <div class="form-group">
+            <label for="id_titulo">Título da notícia</label>
+            <input type="text"
+                   id="id_titulo"
+                   name="titulo"
+                   value="{{ form.titulo.value|default:'' }}"
+                   placeholder="Digite o título"
+                   class="form-input"
+                   required>
+        </div>
+    
+        <div class="form-group">
+            <label for="id_conteudo">Conteúdo da notícia</label>
+            {{ form.conteudo }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_regiao">Região</label>
+            <input type="text"
+                   id="id_regiao"
+                   name="regiao"
+                   value="{{ form.regiao.value|default:'' }}"
+                   placeholder="Ex: Rio de Janeiro"
+                   class="form-input">
+        </div>
+
+        <!-- CAMPO DE IMAGEM -->
+        <div class="form-group">
+            <label for="id_imagem">Imagem da notícia</label>
+            <input type="file"
+                   id="id_imagem"
+                   name="imagem"
+                   accept="image/*"
+                   class="form-input">
+        </div>
+
+        <!-- TAGS -->
+        <div class="form-group">
+            <label for="id_tags">Tags</label>
+            {{ form.tags }}
+        </div>
+    
+        <button type="submit" class="btn">Publicar</button>
+    </form>
+</body>
+</html>

@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Resultados da busca</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/pesquisa.css' %}">
 </head>
 
-<body>
-        
+<body>        
     {% block content %}
     <div class="container my-5">
         <h1 class="mb-4">Notícias Relacionadas a {{ termo }}</h1> 
@@ -18,27 +20,35 @@
             {% for noticia in noticias %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ noticia.titulo }}</h5>
+                        <h5 name="{{ noticia.titulo }}" class="card-title">{{ noticia.titulo }}</h5>
                         
                         <div class="tags-list">
                             {% for t in noticia.tags.all %}
-                                <a href="{% url 'noticias_por_tag' t.slug %}" class="badge bg-primary text-decoration-none me-2">{{ t.nome }}</a>
+                                <a href="{% url 'noticias_por_tag' t.slug %}" class="badge bg-primary text-decoration-none me-2">
+                                    {{ t.nome }}
+                                </a>
                             {% endfor %}
                         </div>
                         
                         <small class="text-muted">Publicado em: {{ noticia.data_postagem|date:"d/m/Y" }}</small>
-                        <p class="card-text mt-2">{{ noticia.conteudo|truncatewords:30|safe }}</p>
-                        <a href="{% url 'noticia' noticia.id %}" class="btn btn-sm btn-outline-dark">Ler Mais</a>
+                        
+                        <p class="card-text mt-2">
+                            {{ noticia.conteudo|truncatewords:30|safe }}
+                        </p>
+
+                        <a href="{% url 'noticia' noticia.id %}" class="btn btn-sm btn-outline-dark">
+                            Ler Mais
+                        </a>
                     </div>
                 </div>
             {% endfor %}
         {% else %}
-            <p>Não há notícias Relacionadas com "{{ termo }}".</p>
+            <p name="context">Não há notícias relacionadas com "{{ termo }}".</p>
         {% endif %}
 
         <a href="{% url 'home' %}">← Home</a>
-
     </div>
     {% endblock content %}
 </body>
 </html>
+

@@ -1,0 +1,371 @@
+/* ===== VARIÁVEIS - PALETA DE CORES PRIMÁRIAS ===== */
+:root {
+    --vermelho: #BE1311;
+    --amarelo: #F9CD0A;
+    --azul: #182E5F;
+    --laranja: #E4641D;
+    --branco: #FFFFFF;
+    --cinza-claro: #F8F9FA;
+    --cinza-medio: #E9ECEF;
+    --cinza-escuro: #495057;
+    --preto: #182E5F;
+}
+
+/* ===== RESET E BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--cinza-claro);
+    color: var(--preto);
+    line-height: 1.8;
+    padding: 2rem 1rem;
+}
+
+/* ===== CONTAINER PRINCIPAL - COMPOSIÇÃO EQUILIBRADA ===== */
+body {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ===== TÍTULO DA NOTÍCIA - DESTAQUE PRIMÁRIO ===== */
+h1 {
+    font-size: 2.5rem;
+    color: var(--preto);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 4px solid transparent;
+    border-image: linear-gradient(90deg, var(--vermelho), var(--amarelo), var(--azul)) 1;
+    animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== DATA DE PUBLICAÇÃO - MINIMALISTA ===== */
+body > p:first-of-type {
+    margin-bottom: 2rem;
+    animation: fadeIn 0.8s ease;
+}
+
+small {
+    color: var(--cinza-escuro);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+small::before {
+    content: '📅';
+    font-size: 1.2rem;
+}
+
+/* ===== CONTEÚDO DA NOTÍCIA - LEITURA EQUILIBRADA ===== */
+div {
+    background-color: var(--branco);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ===== ESTILIZAÇÃO DO CONTEÚDO INTERNO ===== */
+div p {
+    margin-bottom: 1.5rem;
+    color: var(--preto);
+    font-size: 1.1rem;
+}
+
+div h2 {
+    color: var(--vermelho);
+    font-size: 1.8rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+div h3 {
+    color: var(--azul);
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+}
+
+div h4 {
+    color: var(--laranja);
+    font-size: 1.3rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+}
+
+div ul,
+div ol {
+    margin-left: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+div li {
+    margin-bottom: 0.5rem;
+    color: var(--preto);
+}
+
+div blockquote {
+    border-left: 4px solid var(--amarelo);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    background-color: var(--cinza-claro);
+    border-radius: 8px;
+    font-style: italic;
+    color: var(--cinza-escuro);
+}
+
+div img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 2rem 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+div a {
+    color: var(--azul);
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+div a:hover {
+    color: var(--vermelho);
+    border-bottom-color: var(--vermelho);
+}
+
+/* ===== BOTÃO VOLTAR - FORMA GEOMÉTRICA SIMPLES ===== */
+body > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--azul);
+    color: var(--branco);
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(69, 123, 157, 0.2);
+    margin-bottom: 2rem;
+    animation: fadeIn 1s ease;
+}
+
+body > a:hover {
+    background-color: var(--vermelho);
+    transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.3);
+}
+
+body > a:active {
+    transform: translateX(-3px);
+}
+
+/* ===== SEÇÃO DE TAGS - EQUILÍBRIO E CLAREZA ===== */
+body > p:last-of-type {
+    background-color: var(--branco);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    animation: fadeIn 1.2s ease;
+}
+
+body > p:last-of-type::before {
+    content: '🏷️';
+    font-size: 1.5rem;
+}
+
+/* ===== LINKS DAS TAGS - FORMAS GEOMÉTRICAS ===== */
+body > p:last-of-type a {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--amarelo), var(--laranja));
+    color: var(--branco);
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(244, 162, 97, 0.3);
+}
+
+body > p:last-of-type a:hover {
+    background: linear-gradient(135deg, var(--vermelho), var(--laranja));
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.4);
+}
+
+body > p:last-of-type a:active {
+    transform: translateY(-1px);
+}
+
+/* ===== DECORAÇÃO GEOMÉTRICA ===== */
+body::before {
+    content: '';
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: var(--azul);
+    border-radius: 50%;
+    top: -150px;
+    right: -150px;
+    opacity: 0.05;
+    z-index: -1;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    width: 250px;
+    height: 250px;
+    background: var(--vermelho);
+    border-radius: 50%;
+    bottom: -125px;
+    left: -125px;
+    opacity: 0.05;
+    z-index: -1;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 1.5rem 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+        padding-bottom: 1rem;
+    }
+
+    div {
+        padding: 2rem 1.5rem;
+    }
+
+    div p {
+        font-size: 1rem;
+    }
+
+    div h2 {
+        font-size: 1.5rem;
+    }
+
+    div h3 {
+        font-size: 1.3rem;
+    }
+
+    div h4 {
+        font-size: 1.1rem;
+    }
+
+    body > a {
+        padding: 0.9rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    body > p:last-of-type {
+        padding: 1.2rem 1.5rem;
+        gap: 0.8rem;
+    }
+
+    body > p:last-of-type a {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.7rem;
+    }
+
+    div {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+    }
+
+    div h2 {
+        font-size: 1.3rem;
+    }
+
+    div h3 {
+        font-size: 1.1rem;
+    }
+
+    div ul,
+    div ol {
+        margin-left: 1.5rem;
+    }
+
+    body > p:last-of-type {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ===== ACESSIBILIDADE - FOCO VISÍVEL ===== */
+a:focus-visible {
+    outline: 3px solid var(--amarelo);
+    outline-offset: 3px;
+}
+
+/* ===== SELEÇÃO DE TEXTO ===== */
+::selection {
+    background-color: var(--amarelo);
+    color: var(--preto);
+}
+
+::-moz-selection {
+    background-color: var(--amarelo);
+    color: var(--preto);
+}

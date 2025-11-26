@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login – Portal</title>
 
-    <!-- CSS principal do site -->
-    <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
-    <!-- Ícones -->
+    <!-- CSS antigo do site -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <!-- Ícones Font Awesome -->
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -16,12 +16,6 @@
 <body class="auth-body">
     <div class="auth-wrapper">
         <div class="auth-card">
-            <div class="auth-header">
-                <h1 class="auth-title">Bem-vindo de volta</h1>
-                <p class="auth-subtitle">
-                    Faça login para continuar navegando pelas notícias.
-                </p>
-            </div>
 
             <form method="POST" class="auth-form">
                 {% csrf_token %}
@@ -59,17 +53,14 @@
                     <p class="auth-error">{{ error }}</p>
                 {% endif %}
 
-                <button type="submit" class="btn-primary auth-submit">
-                    Entrar
-                </button>
+                <button type="submit" class="entry_button">Entrar</button>
+
             </form>
 
-            <p class="auth-footer-text">
-                Ainda não tem conta?
-                <a href="{% url 'register' %}" class="auth-link">Criar conta</a>
-            </p>
         </div>
     </div>
+
+    <a href="{% url 'register' %}" >Criar conta</a>
 
     <!-- Script: mostrar/ocultar senha -->
     <script>

@@ -1,6 +1,7 @@
 from django.test import TestCase,LiveServerTestCase,override_settings
 from Jornalista.models import Perfil as perfilJornalista
 from .models import Perfil as perfilUsuario
+from selenium.webdriver.common.action_chains import ActionChains
 from django.contrib.auth.models import User
 from django.urls import reverse
 from Jornalista.models import *
@@ -125,32 +126,28 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.url_contains('/user/')
         )
 
-        futebolButton = self.browser.find_element(By.CSS_SELECTOR,f'input[type="checkbox"][value="{ futebolTag.id }"]')
-        politicaButton = self.browser.find_element(By.CSS_SELECTOR,f'input[type="checkbox"][value="{ politicaTag.id }"]')
+        futebolButton = self.browser.find_element(By.XPATH, "//label[.//span[text()='Futebol']]")
+        politicaButton = self.browser.find_element(By.XPATH, "//label[.//span[text()='Politica']]")
         saveButton = self.browser.find_element(By.NAME,"save")
 
         futebolButton.click()
         politicaButton.click()
         saveButton.click()
 
-        self.browser.get(f'{self.live_server_url}/')
-
         WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.NAME,'user'))
+            expected_conditions.presence_of_element_located((By.NAME,'context'))
         )
 
-        button = self.browser.find_element(By.NAME,"user")
-        button.click()
+        self.assertEqual(user.perfil.tags.count(), 2)
 
-        WebDriverWait(self.browser, 10).until(
-            expected_conditions.url_contains('/user/')
-        )
-
-        futebolButton = self.browser.find_element(By.CSS_SELECTOR,f'input[type="checkbox"][value="{ futebolTag.id }"]')
+        futebolButton = self.browser.find_element(By.XPATH, "//label[.//span[text()='Futebol']]")
         saveButton = self.browser.find_element(By.NAME,"save")
 
         futebolButton.click()
         saveButton.click()
+        time.sleep(1)
+        self.assertEqual(user.perfil.tags.count(),1)
+
 
     def test_noticias_por_tag_slug_invalido(self):
         
@@ -178,8 +175,14 @@ class TesteE2E(LiveServerTestCase):
         self.noticia_c.tags.add(self.tag_economia)
 
         self.browser.get(f'{self.live_server_url}/')
+        print(self.browser.page_source)
 
-        noticia = self.browser.find_element(By.XPATH, f"//a[contains(@href, '/noticia/{self.noticia_a.id}')]")
+        noticia = self.browser.find_element(
+            By.XPATH,
+            f"//a[@class='read-more-btn' and @href='/noticia/{self.noticia_a.id}/']"
+        )
+        actions = ActionChains(self.browser)
+        actions.move_to_element(noticia).perform()
         noticia.click()
 
         WebDriverWait(self.browser, 10).until(
@@ -203,5 +206,42 @@ class TesteE2E(LiveServerTestCase):
         self.assertIn(self.noticia_b, response_politica.context['noticias'])
         
         self.assertNotIn(self.noticia_c, response_politica.context['noticias'])
+
+    def test_pesquisa_noticia(self):
+
+        user = User.objects.create_user(username='jornalistaTeste')
+        jornalista = perfilJornalista.objects.create(user=user)
+
+        self.noticia_a = Noticia.objects.create(autor=jornalista,titulo='Título A', conteudo='Conteúdo A')
+
+        self.browser.get(f'{self.live_server_url}/')
+
+        search = self.browser.find_element(By.NAME,"BarraDePesquisa")
+        searchButton = self.browser.find_element(By.CLASS_NAME,"search-btn")
+        search.send_keys("Título A")
+        searchButton.click()
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.url_contains('/pesquisa/')
+        )
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,f"{self.noticia_a.titulo}"))
+        )
+
+        self.browser.get(f'{self.live_server_url}/')
+
+        search = self.browser.find_element(By.NAME,"BarraDePesquisa")
+        searchButton = self.browser.find_element(By.CLASS_NAME,"search-btn")
+        search.send_keys("nada")
+        searchButton.click()
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.url_contains('/pesquisa/')
+        )
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,"context"))
+        )
 
 # Create your tests here.

@@ -1,25 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+    {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/useraccount.css' %}">
+    <title>Selecione suas Tags</title>
 </head>
 <body>
-    
-    <form method="POST">
-        {% csrf_token %}
 
-        {% for tag in tags %}
-            <label>
-                <input type="checkbox" name="tags" value="{{ tag.id }}" 
-                {% if tag in usuario.perfil.tags.all %} checked {% endif %}>
-                {{ tag.nome }}
-            </label>
-        {% endfor %}
+    <!-- Logo no topo -->
+    <div class="logo">
+        <img src="{% static 'images/athena-logo.png' %}" alt="Athena">
+    </div>
 
-        <button name="save" type="submit" class="entry_button">enviar</button>
-    </form>
+    <div class="container">
+        <h1 class="text-center">Escolha seus Interesses</h1>
+        
+        <div class="divider divider-red"></div>
+
+        <p class="subtitle text-center">Selecione as tags que representam seus interesses e preferências</p>
+
+        <form method="POST" class="spacing-medium">
+            {% csrf_token %}
+
+            <div class="tags-grid">
+                {% for tag in tags %}
+                    <label class="tag-item">
+                        <input type="checkbox" 
+                               name="tags" 
+                               value="{{ tag.id }}" 
+                               {% if tag in usuario.perfil.tags.all %} checked {% endif %}>
+                        <span class="tag-label">{{ tag.nome }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+
+            <button name="save" type="submit" class="btn btn-primary btn-full">Salvar Preferências</button>
+
+            {% if context %}
+                <p name="context">{{ context }}</p>
+            {% endif %}
+        </form>
+
+        <div class="divider"></div>
+
+        <p class="text-center">
+            <a href="{% url 'home' %}">Voltar ao home</a>
+        </p>
+    </div>
 
 </body>
 </html>
