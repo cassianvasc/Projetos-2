@@ -75,11 +75,13 @@ class TesteE2E(LiveServerTestCase):
 
         usernameInput.send_keys('teste')
         emailInput.send_keys('a@gmail.com')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
-        time.sleep(5)
 
-        print("Checando se existe usuario")
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,"username"))
+        )
+
         self.assertTrue(User.objects.filter(username='teste').exists())
 
         WebDriverWait(self.browser, 10).until(
@@ -90,24 +92,23 @@ class TesteE2E(LiveServerTestCase):
         passwordInput = self.browser.find_element(By.NAME,'password')
 
         usernameInput.send_keys('Erro')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
 
-        print(self.browser.page_source)
-
         WebDriverWait(self.browser,10).until(
-            expected_conditions.presence_of_element_located((By.NAME,'erro'))
+            expected_conditions.text_to_be_present_in_element(
+                (By.TAG_NAME, "body"), "Nome de usuario ou senha incorreto")
         )
 
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
 
         usernameInput.send_keys('teste')
-        passwordInput.send_keys('123')
+        passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
 
         WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.CLASS_NAME,'page-wrapper'))
+            expected_conditions.presence_of_element_located((By.NAME,'user'))
         )
 
     def test_tags(self):

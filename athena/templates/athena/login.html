@@ -1,32 +1,84 @@
-<!DOCTYPE html>
-<html lang="pt-br">
 {% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login – Portal</title>
+
+    <!-- CSS antigo do site -->
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <!-- Ícones Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
-<body>
+<body class="auth-body">
+    <div class="auth-wrapper">
+        <div class="auth-card">
 
-    <form method="POST">
-        {% csrf_token %}
+            <form method="POST" class="auth-form">
+                {% csrf_token %}
 
-        <label for="Login">Digite um Login:</label>
-        <input type="text" name="username" placeholder="Nome de usuário">
+                <div class="auth-input-group">
+                    <label for="id_username">Login</label>
+                    <div class="auth-input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input id="id_username"
+                               type="text"
+                               name="username"
+                               placeholder="Nome de usuário"
+                               required>
+                    </div>
+                </div>
 
-        <label for="Senha">Digite uma Senha:</label>
-        <input type="password" name="password" placeholder="Senha">
+                <div class="auth-input-group">
+                    <label for="id_password">Senha</label>
+                    <div class="auth-input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input id="id_password"
+                               type="password"
+                               name="password"
+                               placeholder="Digite sua senha"
+                               required>
+                        <button type="button"
+                                class="toggle-password"
+                                aria-label="Mostrar ou ocultar senha">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
 
-        <button type="submit" class="entry_button">Enviar</button>
-    </form>
+                {% if error %}
+                    <p class="auth-error">{{ error }}</p>
+                {% endif %}
 
-    <a href="{% url 'register' %}">Registre</a>
+                <button type="submit" class="entry_button">Entrar</button>
 
-    {% if error %}
-        <p name="erro">{{ error }}</p>
-    {% endif %}
+            </form>
 
+        </div>
+    </div>
+
+    <a href="{% url 'register' %}" >Criar conta</a>
+
+    <!-- Script: mostrar/ocultar senha -->
+    <script>
+        const toggleBtn = document.querySelector('.toggle-password');
+        const passwordInput = document.querySelector('#id_password');
+
+        if (toggleBtn && passwordInput) {
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+
+                const icon = toggleBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
