@@ -30,3 +30,38 @@ document.getElementById("loadMoreBtn").addEventListener("click", function () {
             }
         });
 });
+
+//Parte de adicionar e remover notícias favoritas
+const favoriteButtons = document.querySelectorAll('.favorite-btn');
+const favoritesGrid = document.getElementById('favoritesGrid');
+
+favoriteButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const noticiaId = btn.dataset.id;
+        const heartIcon = btn.querySelector('i');
+        const isFavorited = heartIcon.classList.contains('fas');
+        if (isFavorited) {
+            heartIcon.classList.remove('fas');
+            heartIcon.classList.add('far');
+            const favItem = favoritesGrid.querySelector(`[data-id="${noticiaId}"]`);
+            if (favItem) favItem.remove();
+            if (favoritesGrid.children.length === 0) {
+                const p = document.createElement('p');
+                p.className = 'no-favorites';
+                p.textContent = "Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!";
+                favoritesGrid.appendChild(p);
+            }
+        } else {
+            heartIcon.classList.remove('far');
+            heartIcon.classList.add('fas');
+
+            const noFav = favoritesGrid.querySelector('.no-favorites');
+            if (noFav) noFav.remove();
+
+            const noticiaCard = btn.closest('.news-card').cloneNode(true);
+            noticiaCard.dataset.id = noticiaId;
+            noticiaCard.querySelector('.favorite-btn').remove();
+            favoritesGrid.appendChild(noticiaCard);
+        }
+    });
+});
