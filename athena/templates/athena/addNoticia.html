@@ -1,57 +1,291 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adicionar Notícia</title>
+    <title>Nova notícia – Jornal Web</title>
+
+    <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
+
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            color: #111827;
+        }
+
+        .pagina-form-noticia {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 16px 48px;
+        }
+
+        .topo-form-noticia {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .titulo-form-noticia {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0b1120;
+        }
+
+        .link-voltar-noticia {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #1d4ed8;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #e0ecff;
+            transition: background .2s, transform .1s;
+        }
+        .link-voltar-noticia:hover {
+            background: #c7ddff;
+            transform: translateY(-1px);
+        }
+
+        .cartao-form-noticia {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 18px 35px rgba(15,23,42,.08);
+            padding: 24px 24px 28px;
+        }
+
+        .descricao-form-noticia {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .grupo-campos-form {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+            gap: 20px 24px;
+        }
+
+        @media (max-width: 900px) {
+            .grupo-campos-form {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        .campo-form {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .campo-form label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .campo-form small {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .campo-form input[type="text"],
+        .campo-form textarea,
+        .campo-form select {
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            padding: 10px 12px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+
+        .campo-form textarea {
+            min-height: 160px;
+            resize: vertical;
+        }
+
+        .campo-form input[type="text"]:focus,
+        .campo-form textarea:focus,
+        .campo-form select:focus {
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 1px rgba(37,99,235,.1);
+            background: #f9fafb;
+        }
+
+        .campo-arquivo input[type="file"] {
+            font-size: 14px;
+        }
+
+        .campo-tags select[multiple] {
+            min-height: 140px;
+        }
+
+        .erros-form {
+            margin-bottom: 12px;
+            color: #b91c1c;
+            font-size: 13px;
+        }
+
+        .erros-campo {
+            margin-top: 2px;
+            color: #b91c1c;
+            font-size: 12px;
+        }
+
+        .rodape-form-noticia {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .botao-secundario {
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 18px;
+            font-size: 14px;
+            background: #ffffff;
+            color: #374151;
+            cursor: pointer;
+            transition: background .2s, transform .1s, box-shadow .1s;
+        }
+        .botao-secundario:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(148,163,184,.35);
+        }
+
+        .botao-principal {
+            border-radius: 999px;
+            border: none;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #1d4ed8;
+            color: #ffffff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background .2s, transform .1s, box-shadow .1s;
+        }
+        .botao-principal:hover {
+            background: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px rgba(37,99,235,.35);
+        }
+    </style>
 </head>
 <body>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-    
-        <div class="form-group">
-            <label for="id_titulo">Título da notícia</label>
-            <input type="text"
-                   id="id_titulo"
-                   name="titulo"
-                   value="{{ form.titulo.value|default:'' }}"
-                   placeholder="Digite o título"
-                   class="form-input"
-                   required>
-        </div>
-    
-        <div class="form-group">
-            <label for="id_conteudo">Conteúdo da notícia</label>
-            {{ form.conteudo }}
-        </div>
 
-        <div class="form-group">
-            <label for="id_regiao">Região</label>
-            <input type="text"
-                   id="id_regiao"
-                   name="regiao"
-                   value="{{ form.regiao.value|default:'' }}"
-                   placeholder="Ex: Rio de Janeiro"
-                   class="form-input">
-        </div>
+<div class="pagina-form-noticia">
 
-        <!-- CAMPO DE IMAGEM -->
-        <div class="form-group">
-            <label for="id_imagem">Imagem da notícia</label>
-            <input type="file"
-                   id="id_imagem"
-                   name="imagem"
-                   accept="image/*"
-                   class="form-input">
-        </div>
+    <div class="topo-form-noticia">
+        <h1 class="titulo-form-noticia">Publicar nova notícia</h1>
 
-        <!-- TAGS -->
-        <div class="form-group">
-            <label for="id_tags">Tags</label>
-            {{ form.tags }}
-        </div>
-    
-        <button type="submit" class="btn">Publicar</button>
-    </form>
+        <a href="/" class="link-voltar-noticia">
+            ← Voltar para a página inicial
+        </a>
+    </div>
+
+    <div class="cartao-form-noticia">
+
+        <p class="descricao-form-noticia">
+            Preencha as informações abaixo para publicar uma nova notícia no portal.
+        </p>
+
+        {# erros gerais do formulário #}
+        {% if form.non_field_errors %}
+            <div class="erros-form">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="grupo-campos-form">
+
+                <div class="campo-form">
+                    <label for="{{ form.titulo.id_for_label }}">Título da notícia</label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                        <div class="erros-campo">{{ form.titulo.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="campo-form campo-regiao">
+                    <label for="{{ form.regiao.id_for_label }}">Região</label>
+                    <small>Exemplo: Recife, Rio de Janeiro, Brasil</small>
+                    {{ form.regiao }}
+                    {% if form.regiao.errors %}
+                        <div class="erros-campo">{{ form.regiao.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="campo-form" style="grid-column: 1 / -1;">
+                    <label for="{{ form.conteudo.id_for_label }}">Conteúdo da notícia</label>
+                    {{ form.conteudo }}
+                    {% if form.conteudo.errors %}
+                        <div class="erros-campo">{{ form.conteudo.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="campo-form campo-arquivo">
+                    <label for="{{ form.imagem.id_for_label }}">Imagem da notícia</label>
+                    <small>Opcional – JPG, PNG ou WEBP.</small>
+
+                    <div class="upload-imagem-wrapper">
+                 
+                        <button type="button"
+                                class="botao-upload-imagem"
+                                onclick="document.getElementById('{{ form.imagem.id_for_label }}').click()">
+                            📷 Escolher imagem
+                        </button>
+
+                        <span id="nome-arquivo-imagem" class="nome-arquivo-imagem">
+                            Nenhum arquivo selecionado
+                        </span>
+                    </div>
+
+      
+                    {{ form.imagem }}
+
+                    {% if form.imagem.errors %}
+                        <div class="erros-campo">{{ form.imagem.errors }}</div>
+                    {% endif %}
+                </div>
+                                <div class="campo-form campo-tags">
+                    <label for="{{ form.tags.id_for_label }}">Tags</label>
+                    <small>Segure CTRL (ou CMD) para selecionar mais de uma.</small>
+                    {{ form.tags }}
+                    {% if form.tags.errors %}
+                        <div class="erros-campo">{{ form.tags.errors }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="rodape-form-noticia">
+                <button type="reset" class="botao-secundario">
+                    Limpar campos
+                </button>
+
+                <button type="submit" class="botao-principal">
+                    Publicar notícia →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
