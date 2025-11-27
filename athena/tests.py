@@ -175,7 +175,6 @@ class TesteE2E(LiveServerTestCase):
         self.noticia_c.tags.add(self.tag_economia)
 
         self.browser.get(f'{self.live_server_url}/')
-        print(self.browser.page_source)
 
         noticia = self.browser.find_element(
             By.XPATH,
@@ -193,8 +192,11 @@ class TesteE2E(LiveServerTestCase):
             reverse('noticias_por_tag', args=[self.tag_politica.slug])
         )
 
-        tag = self.browser.find_element(By.XPATH,f"//a[contains(@href, '/tag/{self.tag_politica.slug}')]")
-        tag.click()
+        tag = WebDriverWait(self.browser, 10).until(
+            expected_conditions.element_to_be_clickable((By.XPATH, f"//a[contains(@href, '/tag/{self.tag_politica.slug}')]"))
+        )
+
+        self.browser.execute_script("arguments[0].click();", tag)
 
         WebDriverWait(self.browser, 10).until(
             expected_conditions.url_contains('/tag/')
