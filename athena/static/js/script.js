@@ -1,99 +1,125 @@
-function toggleFavorite(e) {
-    const btn = e.currentTarget;
-    const noticiaId = btn.dataset.id;
-    const heartIcon = btn.querySelector('i');
-    const isFavorited = heartIcon.classList.contains('fas');
-    const favoritesGrid = document.getElementById('favoritesGrid');
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".favorite-btn");
 
-    if (isFavorited) {
-        heartIcon.classList.remove('fas');
-        heartIcon.classList.add('far');
+    buttons.forEach(btn => {
+        btn.addEventListener("click", function () {
+            const noticiaId = this.dataset.id;
 
-        const favItem = favoritesGrid.querySelector(`[data-id="${noticiaId}"]`);
-        if (favItem) favItem.remove();
+            fetch(`/favorite/notices/${noticiaId}/`,{
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) return;
 
-        if (favoritesGrid.children.length === 0) {
-            const p = document.createElement('p');
-            p.className = 'no-favorites';
-            p.textContent = "Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!";
-            favoritesGrid.appendChild(p);
-        }
-    } else {
-        heartIcon.classList.remove('far');
-        heartIcon.classList.add('fas');
+                const icon = this.querySelector("i");
 
-        const noFav = favoritesGrid.querySelector('.no-favorites');
-        if (noFav) noFav.remove();
-
-        const noticiaCard = btn.closest('.news-card').cloneNode(true);
-        noticiaCard.dataset.id = noticiaId;
-        noticiaCard.querySelector('.favorite-btn').remove();
-        favoritesGrid.appendChild(noticiaCard);
-    }
-}
-
-document.getElementById("loadMoreBtn").addEventListener("click", function () {
-    currentPage++;
-    fetch(`/load-more-news/?page=${currentPage}`)
-        .then(res => res.json())
-        .then(data => {
-            const grid = document.getElementById("newsGrid");
-
-            data.noticias.forEach(n => {
-                const article = document.createElement('article');
-                article.className = 'news-card';
-                article.innerHTML = `
-                    <div class="news-image">
-                        <img src="${n.imagem ? n.imagem : 'https://via.placeholder.com/400x250'}">
-                        ${n.tag ? `<span class="category-tag">${n.tag}</span>` : ""}
-                    </div>
-                    <div class="news-content">
-                        <h3>${n.titulo}</h3>
-                        <p class="news-meta"><i class="far fa-calendar"></i> ${n.data}</p>
-                        <p class="news-excerpt">${n.excerpt}</p>
-                        <a href="/noticia/${n.id}" class="read-more-btn">Ler mais</a>
-                        <button class="favorite-btn" data-id="${n.id}" aria-label="Adicionar aos favoritos">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(article);
-
-                article.querySelector('.favorite-btn').addEventListener('click', toggleFavorite);
+                if (data.favorited) {
+                    icon.classList.remove("far", "fa-heart");
+                    icon.classList.add("fas", "fa-heart", "filled");
+                } else {
+                    icon.classList.remove("fas", "fa-heart", "filled");
+                    icon.classList.add("far", "fa-heart");
+                }
             });
-
-            if (!data.has_next) document.getElementById("loadMoreBtn").style.display = "none";
         });
+    });
+
+    // pegar CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.favorite-btn').forEach(btn => btn.addEventListener('click', toggleFavorite));
+document.addEventListener("DOMContentLoaded", () => {
+    const sections = Array.from(document.querySelectorAll("section[id]"));
+    const navLinksAll = Array.from(document.querySelectorAll(".nav-menu a"));
+    const hashLinks = navLinksAll.filter(a => a.getAttribute("href")?.startsWith("#"));
+    const homeLink = navLinksAll.find(a => !(a.getAttribute("href") || "").startsWith("#")) || navLinksAll[0];
 
-    // Menu ativo
-    const linkInicio = document.querySelector('.nav-menu a[href="/"]'); // ajuste conforme URL renderizada pelo Django
-    const linkFavoritos = document.querySelector('.nav-menu a[href="#favoritos"]');
-    const favoritosSection = document.getElementById('favoritos');
-    const offset = 120;
+    function clearActive() {
+        navLinksAll.forEach(l => l.classList.remove("active"));
+    }
 
-    function updateActiveMenu() {
-        const scrollPos = window.scrollY || window.pageYOffset;
-        const favoritosTop = favoritosSection.offsetTop - offset;
-        const favoritosBottom = favoritosTop + favoritosSection.offsetHeight;
-
-        if (scrollPos >= favoritosTop && scrollPos < favoritosBottom) {
-            linkFavoritos.classList.add('active');
-            linkInicio.classList.remove('active');
-        } else {
-            linkFavoritos.classList.remove('active');
-            linkInicio.classList.add('active');
+    function setActiveLinkForSection(sectionId) {
+        clearActive();
+        const activeLink = document.querySelector('.nav-menu a[href="#' + sectionId + '"]');
+        if (activeLink) {
+            activeLink.classList.add("active");
+        } else if (homeLink) {
+            // fallback: se nenhuma âncora bate, marca home
+            homeLink.classList.add("active");
         }
     }
 
-    window.addEventListener('scroll', updateActiveMenu);
-    window.addEventListener('resize', updateActiveMenu);
-    window.addEventListener('load', updateActiveMenu);
+    function changeActive() {
+        const scrollPos = window.scrollY + 300;
+        let found = false;
 
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', () => setTimeout(updateActiveMenu, 100));
+        for (const section of sections) {
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
+            if (scrollPos >= top && scrollPos < bottom) {
+                setActiveLinkForSection(section.id);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            // se não está em nenhuma seção (topo ou área sem seção), marca home
+            clearActive();
+            if (homeLink) homeLink.classList.add("active");
+        }
+    }
+
+    // smooth scroll para links de hash e proteção caso o alvo não exista
+    hashLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+            const href = this.getAttribute("href");
+            const targetId = href && href.startsWith("#") ? href.slice(1) : null;
+            const target = targetId ? document.getElementById(targetId) : null;
+
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+                // atualiza active imediatamente
+                setActiveLinkForSection(targetId);
+            } else {
+                // se não existir target, deixa o comportamento padrão (ou previne se preferir)
+                console.warn("Anchor target not found:", href);
+            }
+        });
     });
+
+    // também altera active ao clicar em links que levam pra outras páginas (opcional)
+    navLinksAll.forEach(link => {
+        link.addEventListener("click", function () {
+            // se for link para hash, o handler acima já cuida
+            if (!(this.getAttribute("href") || "").startsWith("#")) {
+                clearActive();
+                this.classList.add("active");
+            }
+        });
+    });
+
+    // Listener de scroll
+    window.addEventListener("scroll", changeActive, { passive: true });
+
+    // Set initial state
+    changeActive();
 });

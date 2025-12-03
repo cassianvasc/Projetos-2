@@ -28,7 +28,7 @@
 
                 <nav class="nav-menu" aria-label="Menu principal">
                     <ul>
-                        <li><a href="{% url 'home' %}" class="active">Início</a></li>
+                        <li><a href="{% url 'home' %}">Início</a></li>
                         <li><a href="#favoritos">Favoritos</a></li>
                         <li><a href="#sobre">Sobre</a></li>
                     </ul>
@@ -140,7 +140,11 @@
                             <a name="{{ noticia.id }}" href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
 
                             <button class="favorite-btn" data-id="{{ noticia.id }}" aria-label="Adicionar aos favoritos">
+                            {% if noticia.id in favoritos_ids %}
+                                <i class="fas fa-heart filled"></i>
+                            {% else %}
                                 <i class="far fa-heart"></i>
+                            {% endif %}                            
                             </button>
                         </div>
                     </article>
@@ -156,17 +160,51 @@
         </section>
 
         <!-- Favoritos -->
-        <section class="favorites-section" id="favoritos">
-            <div class="container">
-                <h2 class="section-title"><i class="fas fa-heart"></i> Minhas Notícias Favoritas</h2>
-                <div class="favorites-grid" id="favoritesGrid">
-                    <p class="no-favorites">Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!</p>
-                </div>
-            </div>
-        </section>
+    <section class="favorites-section" id="favoritos">
+    <div class="container">
+        <h2 class="section-title"><i class="fas fa-heart"></i> Minhas Notícias Favoritas</h2>
+
+        <div class="favorites-grid" id="favoritesGrid">
+            {% if favoritos %}
+                {% for noticia in favoritos %}
+                    <article class="news-card">
+                        <div class="news-image">
+                            {% if noticia.imagem %}
+                                <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem" alt="Sem imagem">
+                            {% endif %}
+                            {% if noticia.tag %}
+                                <span class="category-tag">{{ noticia.tag|title }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="news-content">
+                            <h3 class="news-title">{{ noticia.titulo }}</h3>
+                            <p class="news-meta">
+                                <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \\d\\e F, Y" }}</span>
+                                {% if noticia.autor %}
+                                    <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
+                                {% endif %}
+                            </p>
+
+                            <a href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
+
+                            <button class="favorite-btn" data-id="{{ noticia.id }}">
+                                <i class="fas fa-heart filled"></i>
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="no-favorites">Você ainda não possui notícias favoritas. Clique no ❤ para adicionar!</p>
+            {% endif %}
+        </div>
+    </div>
+    </section>
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer" id="sobre">
             <div class="container footer-content">
                 <div class="footer-section">
                     <h3>Jornal do Commercio</h3>

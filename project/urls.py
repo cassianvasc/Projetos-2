@@ -52,4 +52,7 @@ urlpatterns = [
     path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
 
     path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
+    
+    path('favorite/notices/<int:noticiaId>/', views.FavoriteNews, name='FavoriteNews'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

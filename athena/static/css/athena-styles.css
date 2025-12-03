@@ -58,7 +58,6 @@ body{
 
 .ad-inner{ font-size:0.95rem;color:var(--cinza-escuro); }
 
-/* esconder anúncios em telas menores para não atrapalhar UX */
 @media (max-width:1400px){
     .ad-left, .ad-right{ display:none; }
     .page-wrapper{ padding:0 16px; }
@@ -223,6 +222,7 @@ body{
 .read-more-btn{
     background:var(--azul); color:var(--branco); text-decoration:none; padding:10px 16px; border-radius:8px; font-weight:600;
     display:inline-flex; gap:8px; align-items:center; transition:all .2s ease;
+    z-index: 1;
 }
 .read-more-btn:hover{ background:var(--vermelho); transform:translateX(6px); }
 
@@ -230,6 +230,7 @@ body{
     position:absolute; top:12px; right:12px; width:44px; height:44px; border-radius:50%;
     background:var(--branco); border:2px solid var(--cinza-medio); display:flex; align-items:center; justify-content:center;
     cursor:pointer; transition:all .18s ease; color:var(--cinza-escuro); font-size:1.1rem;
+    z-index: 5;
 }
 .favorite-btn:hover{ border-color:var(--vermelho); color:var(--vermelho); transform:scale(1.05); }
 .favorite-btn.active{ background:var(--vermelho); border-color:var(--vermelho); color:var(--branco); }

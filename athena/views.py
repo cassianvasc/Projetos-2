@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 from .models import Tag
 from .forms import NoticiaForm
 from django.shortcuts import render
@@ -12,6 +13,7 @@ from .models import *
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from math import radians, cos, sin, asin, sqrt
 import json
 import random
@@ -26,6 +28,22 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * asin(sqrt(a))
     r = 6371
     return c * r
+
+@require_POST
+def FavoriteNews(request, noticiaId):
+    if not request.user.is_authenticated:
+        return JsonResponse({"success": False, "error": "not_authenticated"}, status=401)
+
+    perfil = request.user.perfil
+    noticia = get_object_or_404(Noticia, id=noticiaId)
+
+    # toggle favorito
+    if noticia in perfil.relevantes.all():
+        perfil.relevantes.remove(noticia)
+        return JsonResponse({"success": True, "favorited": False})
+    else:
+        perfil.relevantes.add(noticia)
+        return JsonResponse({"success": True, "favorited": True})
 
 def home_page(request):
     user = request.user
@@ -47,10 +65,15 @@ def home_page(request):
             noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
     else:
         noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
+
+    favoritos_ids = request.user.perfil.relevantes.values_list('id', flat=True)
+    favoritos = Noticia.objects.filter(id__in=favoritos_ids)
     
     context = {
         'usuario': user,
         'noticias': noticias,
+        'favoritos': favoritos,
+        'favoritos_ids': favoritos_ids,
         'logado': user.is_authenticated,
         'jornalista': hasattr(user, "perfil_jornalista"),
     }
