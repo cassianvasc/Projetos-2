@@ -40,8 +40,12 @@ def haversine(lat1, lon1, lat2, lon2):
 def FavoriteNews(request, noticiaId):
     if not request.user.is_authenticated:
         return JsonResponse({"success": False, "error": "not_authenticated"}, status=401)
+    # do not assume Perfil exists for authenticated users
+    user = request.user
+    perfil = getattr(user, 'perfil', None)
+    if perfil is None:
+        return JsonResponse({"success": False, "error": "no_perfil"}, status=400)
 
-    perfil = request.user.perfil
     noticia = get_object_or_404(Noticia, id=noticiaId)
 
     # toggle favorito
@@ -76,18 +80,25 @@ def home_page(request):
         noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
 
     if user.is_authenticated:
-        favoritos_ids = user.perfil.relevantes.values_list('id', flat=True)
-        favoritos = Noticia.objects.filter(id__in=favoritos_ids)
+        # try to read perfil, but do NOT create it automatically
+        perfil = getattr(user, 'perfil', None)
 
-        try:
-            perfil_tags_qs = user.perfil.tags.all()
-        except Exception:
+        if perfil is not None:
+            favoritos_ids = perfil.relevantes.values_list('id', flat=True)
+            favoritos = Noticia.objects.filter(id__in=favoritos_ids)
+            try:
+                perfil_tags_qs = perfil.tags.all()
+            except Exception:
+                perfil_tags_qs = Tag.objects.none()
+        else:
+            favoritos_ids = []
+            favoritos = []
             perfil_tags_qs = Tag.objects.none()
 
+        # compute tag ids from favorited noticias (if any)
+        fav_tag_ids = []
         if favoritos_ids:
-            fav_tag_ids = Tag.objects.filter(NoticiaComTag__id__in=list(favoritos_ids)).values_list('id', flat=True)
-        else:
-            fav_tag_ids = []
+            fav_tag_ids = list(Tag.objects.filter(NoticiaComTag__id__in=list(favoritos_ids)).values_list('id', flat=True))
 
         preferred_tag_ids = set(list(perfil_tags_qs.values_list('id', flat=True))) | set(list(fav_tag_ids))
 

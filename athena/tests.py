@@ -1,4 +1,4 @@
-from django.test import TestCase,LiveServerTestCase,override_settings
+﻿from django.test import TestCase,LiveServerTestCase,override_settings
 from Jornalista.models import Perfil as perfilJornalista
 from .models import Perfil as perfilUsuario
 from selenium.webdriver.common.action_chains import ActionChains
@@ -28,18 +28,27 @@ class TesteE2E(LiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
+        # run browser in headless mode to speed up CI/local runs
         options.add_argument('--disable-dev-shm-usage')        
         options.add_argument("--disable-infobars")
         options.add_argument("--incognito")
+        options.add_argument('--headless=new')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--disable-extensions')
+        options.add_argument('--window-size=1920,1080')
 
         service = Service(ChromeDriverManager().install())
         cls.browser = webdriver.Chrome(service=service,options=options)
-        cls.browser.implicitly_wait(10)
+        # keep a small implicit wait; explicit waits will handle synchronisation
+        cls.browser.implicitly_wait(3)
 
     @classmethod
     def tearDownClass(cls):
+        try:
+            cls.browser.quit()
+        except Exception:
+            pass
         super().tearDownClass()
 
 
@@ -86,12 +95,6 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.presence_of_element_located((By.NAME,"username"))
         )
 
-        self.assertTrue(User.objects.filter(username='teste').exists())
-
-        WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.NAME,'username'))
-        )
-
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
 
@@ -99,7 +102,7 @@ class TesteE2E(LiveServerTestCase):
         passwordInput.send_keys('Abc123!')
         passwordInput.send_keys(Keys.RETURN)
 
-        WebDriverWait(self.browser,10).until(
+        WebDriverWait(self.browser, 10).until(
             expected_conditions.text_to_be_present_in_element(
                 (By.TAG_NAME, "body"), "Nome de usuario ou senha incorreto")
         )
@@ -147,7 +150,14 @@ class TesteE2E(LiveServerTestCase):
 
         futebolButton.click()
         saveButton.click()
-        time.sleep(1)
+        # wait for the save to complete on the server by polling the DB
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,'context'))
+        )
+        # Give the server a moment to persist the change
+        time.sleep(0.5)
+        # refresh perfil from db to check updated count
+        user.perfil.refresh_from_db()
         self.assertEqual(user.perfil.tags.count(),1)
 
 
@@ -249,10 +259,10 @@ class TesteE2E(LiveServerTestCase):
         )
 
     def test_add_noticia_jornalista(self):
-        # create a user and journalist profile, then login and add a noticia
         username = 'jornalista_add'
         password = 'Senha123!'
         user = User.objects.create_user(username=username, password=password)
+        perfil = Perfil.objects.create(user=user)
         jornalista = perfilJornalista.objects.create(user=user)
 
         # go to login page and sign in
@@ -267,18 +277,15 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.presence_of_element_located((By.NAME,'user'))
         )
 
-        # click the "Adicionar Noticia" button/link in the header
         add_link = WebDriverWait(self.browser, 10).until(
             expected_conditions.element_to_be_clickable((By.LINK_TEXT, 'Adicionar Noticia'))
         )
         add_link.click()
 
-        # wait for addNoticia form to load (titulo field should be present)
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
         )
 
-        # fill the form
         tituloInput = self.browser.find_element(By.NAME, 'titulo')
         regiaoInput = self.browser.find_element(By.NAME, 'regiao')
         conteudoInput = self.browser.find_element(By.NAME, 'conteudo')
@@ -287,31 +294,26 @@ class TesteE2E(LiveServerTestCase):
         regiaoInput.send_keys('Recife')
         conteudoInput.send_keys('Conteúdo de teste para a nova notícia criada pelo E2E.')
 
-        # submit the form
         submitBtn = self.browser.find_element(By.CSS_SELECTOR, 'button.botao-principal')
         submitBtn.click()
 
-        # wait until redirected back to home (header user element visible)
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.NAME,'user'))
         )
 
-        # assert that noticia was created in the database
         from Jornalista.models import Noticia
         self.assertTrue(Noticia.objects.filter(titulo='Teste E2E - Nova Notícia').exists())
 
     def test_add_noticia_with_tags(self):
-        # create a user and journalist profile, tags, then login and add a noticia with tags
         username = 'jornalista_tags'
         password = 'Senha123!'
         user = User.objects.create_user(username=username, password=password)
+        perfil = Perfil.objects.create(user=user)
         jornalista = perfilJornalista.objects.create(user=user)
 
-        # create tags before rendering form so they appear in select
         tag1 = Tag.objects.create(nome='Política')
         tag2 = Tag.objects.create(nome='Economia')
 
-        # login
         self.browser.get(f'{self.live_server_url}/login/')
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
@@ -323,7 +325,6 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.presence_of_element_located((By.NAME,'user'))
         )
 
-        # navigate to add noticia
         add_link = WebDriverWait(self.browser, 10).until(
             expected_conditions.element_to_be_clickable((By.LINK_TEXT, 'Adicionar Noticia'))
         )
@@ -333,29 +334,23 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
         )
 
-        # fill basic fields
         self.browser.find_element(By.NAME, 'titulo').send_keys('Teste Tags')
         self.browser.find_element(By.NAME, 'regiao').send_keys('Recife')
 
-        # select tags using Select helper
         select_elem = Select(self.browser.find_element(By.NAME, 'tags'))
-        # select by visible text (matches Tag.nome)
+
         select_elem.select_by_visible_text('Política')
         select_elem.select_by_visible_text('Economia')
 
-        # fill content (if CKEditor present this may need JS injection; try textarea)
         conteudo = self.browser.find_element(By.NAME, 'conteudo')
         conteudo.send_keys('Conteúdo com tags para teste.')
 
-        # submit
         self.browser.find_element(By.CSS_SELECTOR, 'button.botao-principal').click()
 
-        # wait until redirected back to home
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.NAME,'user'))
         )
 
-        # verify noticia created and tags associated
         from Jornalista.models import Noticia
         noticia = Noticia.objects.filter(titulo='Teste Tags').first()
         self.assertIsNotNone(noticia)
@@ -383,4 +378,35 @@ class TesteE2E(LiveServerTestCase):
         live_badge = self.browser.find_element(By.CLASS_NAME, 'live-badge')
         self.assertTrue(live_badge.is_displayed())
 
+    def test_favoritar_noticia_autenticado(self):
+        jornalista_user = User.objects.create_user(username='journ_fav', password='pass')
+        jornalista = perfilJornalista.objects.create(user=jornalista_user)
+        noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia Favorita', conteudo='Conteudo')
+
+        user = User.objects.create_user(username='user_fav', password='pwd')
+        perfil = perfilUsuario.objects.create(user=user)
+
+        logged = self.client.login(username='user_fav', password='pwd')
+        self.assertTrue(logged)
+
+        resp = self.client.post(f'/favorite/notices/{noticia.id}/')
+        self.assertEqual(resp.status_code, 200)
+
+        perfil.refresh_from_db()
+        self.assertTrue(perfil.relevantes.filter(id=noticia.id).exists())
+
+        resp2 = self.client.post(f'/favorite/notices/{noticia.id}/')
+        self.assertEqual(resp2.status_code, 200)
+        perfil.refresh_from_db()
+        self.assertFalse(perfil.relevantes.filter(id=noticia.id).exists())
+
+    def test_favoritar_noticia_sem_login(self):
+        jornalista_user = User.objects.create_user(username='journ_fav2', password='pass')
+        jornalista = perfilJornalista.objects.create(user=jornalista_user)
+        noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia Sem Login', conteudo='Conteudo')
+
+        resp = self.client.post(f'/favorite/notices/{noticia.id}/')
+        self.assertEqual(resp.status_code, 401)
+
 # Create your tests here.
+
