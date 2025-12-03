@@ -1,31 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const buttons = document.querySelectorAll(".favorite-btn");
+    // Event delegation para favoritos: funciona para botões estáticos e dinâmicos
+    document.body.addEventListener('click', function (e) {
+        const btn = e.target.closest('.favorite-btn');
+        if (!btn) return;
+        e.preventDefault();
 
-    buttons.forEach(btn => {
-        btn.addEventListener("click", function () {
-            const noticiaId = this.dataset.id;
+        const noticiaId = btn.dataset.id;
+        if (!noticiaId) return;
 
-            fetch(`/favorite/notices/${noticiaId}/`,{
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken"),
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) return;
-
-                const icon = this.querySelector("i");
-
-                if (data.favorited) {
-                    icon.classList.remove("far", "fa-heart");
-                    icon.classList.add("fas", "fa-heart", "filled");
-                } else {
-                    icon.classList.remove("fas", "fa-heart", "filled");
-                    icon.classList.add("far", "fa-heart");
-                }
-            });
-        });
+        fetch(`/favorite/notices/${noticiaId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // usuário não autenticado — redireciona para página que pede login
+                const next = encodeURIComponent(window.location.pathname + window.location.search);
+                window.location.href = `/need-login/?next=${next}`;
+                // interrompe a cadeia
+                throw new Error('not_authenticated');
+            }
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.success) return;
+            const icon = btn.querySelector('i');
+            if (!icon) return;
+            if (data.favorited) {
+                icon.classList.remove('far', 'fa-heart');
+                icon.classList.add('fas', 'fa-heart', 'filled');
+                btn.classList.add('active');
+            } else {
+                icon.classList.remove('fas', 'fa-heart', 'filled');
+                icon.classList.add('far', 'fa-heart');
+                btn.classList.remove('active');
+            }
+        })
+        .catch(err => console.warn('Erro ao favoritar:', err.message));
     });
 
     // pegar CSRF
@@ -122,4 +138,139 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Set initial state
     changeActive();
+});
+
+// Busca status do podcast via API (se existir mini-player)
+document.addEventListener('DOMContentLoaded', function () {
+    const mini = document.getElementById('miniPodcast');
+    const audio = document.getElementById('podcastAudio');
+    const titleEl = document.getElementById('miniPodcastTitle');
+    const liveBadge = document.getElementById('miniLiveBadge');
+
+    if (!mini || !audio) return;
+
+    // If template provided a stream URL or podcast id, try to attach it; otherwise show disabled message.
+    const podcastId = mini.dataset.podcastId || mini.getAttribute('data-podcast-id');
+    const streamUrlFromTemplate = mini.dataset.streamUrl || mini.getAttribute('data-stream-url');
+
+    if (!podcastId && !streamUrlFromTemplate) {
+        // No live podcast: disable controls and show message (markup already set by template)
+        if (playBtn) playBtn.disabled = true;
+        if (liveBadge) liveBadge.style.display = 'none';
+    } else {
+        // Prefer direct stream URL from template (fast), else query status API
+        if (streamUrlFromTemplate) {
+            attachStream(streamUrlFromTemplate);
+        } else {
+            const statusUrl = `/api/status/${podcastId}/`;
+            fetch(statusUrl)
+                .then(r => {
+                    if (!r.ok) throw new Error('Status API não disponível');
+                    return r.json();
+                })
+                .then(data => {
+                    if (data.stream_url) {
+                        attachStream(data.stream_url);
+                    }
+
+                    if (data.title && titleEl) {
+                        titleEl.textContent = data.title;
+                    }
+
+                    if (data.is_live && liveBadge) {
+                        liveBadge.style.display = 'inline-block';
+                    }
+                })
+                .catch(err => {
+                    console.info('Podcast status fetch failed:', err.message);
+                });
+        }
+    }
+
+    // helper: carregar hls.js dinamicamente se necessário
+    function loadHlsJs(cb) {
+        if (window.Hls) return cb();
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+        s.onload = cb;
+        s.onerror = () => console.warn('Falha ao carregar hls.js');
+        document.head.appendChild(s);
+    }
+
+    // attachStream: suporta .m3u8 via hls.js ou nativo, e streams diretos (mp3)
+    function attachStream(src) {
+        if (!src) return;
+        // se for HLS
+        const isHls = src.split('?')[0].toLowerCase().endsWith('.m3u8');
+
+        if (isHls) {
+            if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+                audio.src = src;
+                audio.load();
+            } else {
+                loadHlsJs(() => {
+                    if (window.Hls && Hls.isSupported()) {
+                        try {
+                            const hls = new Hls();
+                            hls.loadSource(src);
+                            hls.attachMedia(audio);
+                        } catch (e) {
+                            console.warn('Erro ao inicializar hls.js', e);
+                        }
+                    } else {
+                        console.warn('HLS não suportado neste navegador');
+                    }
+                });
+            }
+        } else {
+            // stream direto (mp3, etc.)
+            audio.src = src;
+            audio.load();
+        }
+    }
+
+    // --- CONTROLES DO PLAYER (play/pause, progresso, tempo) ---
+    const playBtn = document.getElementById('podPlayBtn');
+    const progress = document.getElementById('podProgress');
+    const progressFilled = document.getElementById('podProgressFilled');
+    const currentTimeEl = document.getElementById('podCurrent');
+
+    function formatTime(sec) {
+        if (!isFinite(sec)) return '0:00';
+        const minutes = Math.floor(sec / 60);
+        const seconds = Math.floor(sec % 60).toString().padStart(2, '0');
+        return minutes + ':' + seconds;
+    }
+
+    if (playBtn) {
+        playBtn.addEventListener('click', function () {
+            if (audio.paused) {
+                audio.play().catch(err => console.warn('Play failed:', err.message));
+                this.querySelector('i')?.classList.remove('fa-play');
+                this.querySelector('i')?.classList.add('fa-pause');
+            } else {
+                audio.pause();
+                this.querySelector('i')?.classList.remove('fa-pause');
+                this.querySelector('i')?.classList.add('fa-play');
+            }
+        });
+    }
+
+    // atualizar progresso e tempo
+    audio.addEventListener('timeupdate', function () {
+        const percent = (audio.currentTime / audio.duration) * 100 || 0;
+        if (progressFilled) progressFilled.style.width = percent + '%';
+        if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    // permitir seek clicando na barra
+    if (progress) {
+        progress.addEventListener('click', function (e) {
+            if (!isFinite(audio.duration) || audio.duration === 0) return;
+            const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const pct = clickX / rect.width;
+            audio.currentTime = pct * audio.duration;
+        });
+    }
 });

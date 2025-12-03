@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jornal do Commercio - Portal de Notícias</title>
+    <title>Jornal do Comercio - Portal de Notícias</title>
     <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{% static 'js/load_more_news.js' %}"></script>
@@ -23,7 +23,7 @@
         <header class="header">
             <div class="container header-content">
                 <div class="logo">
-                    <h1><i class="fas fa-newspaper"></i> Jornal do Commercio</h1>
+                    <h1><i class="fas fa-newspaper"></i> Jornal do Comercio</h1>
                 </div>
 
                 <nav class="nav-menu" aria-label="Menu principal">
@@ -207,7 +207,7 @@
         <footer class="footer" id="sobre">
             <div class="container footer-content">
                 <div class="footer-section">
-                    <h3>Jornal do Commercio</h3>
+                    <h3>Jornal do Comercio</h3>
                     <p>Seu portal de notícias atualizado em tempo real.</p>
                     <div class="social-links">
                         <a href="https://www.facebook.com/jornaldocommercioPE/" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
@@ -248,12 +248,50 @@
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2025 Jornal do Commercio. Todos os direitos reservados.</p>
+                <p>&copy; 2025 Jornal do Comercio. Todos os direitos reservados.</p>
             </div>
         </footer>
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/GetGeoLocation.js' %}"></script>
+    <!-- Player compacto fixo (apenas na home por enquanto) -->
+    {% if live_podcast %}
+    <div class="mini-podcast" id="miniPodcast" data-podcast-id="{{ live_podcast.id }}" data-stream-url="{{ live_podcast.stream_url }}" aria-live="polite">
+        <div class="mini-art">
+            {% if live_podcast.thumbnail %}
+                <img src="{{ live_podcast.thumbnail.url }}" alt="{{ live_podcast.title }}">
+            {% else %}
+                <img src="https://via.placeholder.com/80x80/2c3e50/ffffff?text=Pt" alt="Arte do Podcast">
+            {% endif %}
+        </div>
+
+        <div class="mini-meta">
+            <div class="mini-title" id="miniPodcastTitle">{{ live_podcast.title }}</div>
+            <div class="mini-badges"><span class="live-badge" id="miniLiveBadge">AO VIVO</span></div>
+            <div class="mini-controls">
+                <button id="podPlayBtn" class="pod-btn" aria-label="Tocar/pausar"><i class="fas fa-play"></i></button>
+                <div class="pod-progress" id="podProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pod-progress-filled" id="podProgressFilled"></div>
+                </div>
+                <div class="mini-time"><span id="podCurrent">0:00</span></div>
+            </div>
+        </div>
+
+        <audio id="podcastAudio" preload="none" style="display:none">
+            <source src="{{ live_podcast.stream_url }}" type="audio/mpeg">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+    </div>
+    {% else %}
+    <div class="mini-podcast mini-podcast-off" id="miniPodcast" aria-live="polite">
+        <div class="mini-meta">
+            <div class="mini-title" id="miniPodcastTitle">Nenhum podcast ao vivo agora</div>
+            <div class="mini-controls">
+                <button id="podPlayBtn" class="pod-btn" aria-label="Sem podcast" disabled><i class="fas fa-stop"></i></button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </body>
 </html>

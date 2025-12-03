@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Faça login — Jornal do Comercio</title>
+    <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
+</head>
+<body>
+    <div class="container" style="padding:48px 20px; max-width:720px; text-align:center;">
+        <h1>Você precisa estar logado</h1>
+        <p>Para favoritar uma notícia, é necessário entrar na sua conta.</p>
+
+        <div style="margin-top:20px; display:flex; gap:12px; justify-content:center;">
+            <a href="{% url 'login' %}?next={{ next }}" class="header-btn">Entrar</a>
+            <a href="{% url 'register' %}" class="header-btn" style="background:var(--cinza-medio); color:var(--preto); border-color:var(--cinza-medio);">Registrar-se</a>
+        </div>
+
+        <p style="margin-top:18px; color:var(--cinza-escuro);">Você será redirecionado de volta após o login.</p>
+    </div>
+</body>
+</html>

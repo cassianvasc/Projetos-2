@@ -1,7 +1,7 @@
-# 📰 Portal de Notícias - Jornal do Commercio
+# 📰 Portal de Notícias - Jornal do Comercio
 
 ## 📌 Sobre o Projeto
-Este projeto é uma **aplicação web** desenvolvida para o **Jornal do Commercio**, com o objetivo de oferecer uma **experiência moderna, interativa e intuitiva** para os usuários.  
+Este projeto é uma **aplicação web** desenvolvida para o **Jornal do Comercio**, com o objetivo de oferecer uma **experiência moderna, interativa e intuitiva** para os usuários.  
 
 O portal tem como foco **aumentar a fidelidade** e **o engajamento** do público, oferecendo notícias atualizadas, conteúdos relevantes e uma navegação otimizada.
 

@@ -9,9 +9,12 @@ from django.core.paginator import Paginator
 
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.conf import settings
 from .models import *
 
 from django.http import JsonResponse
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from math import radians, cos, sin, asin, sqrt
@@ -19,6 +22,10 @@ import json
 import random
 
 Noticia = apps.get_model('Jornalista', 'Noticia')
+try:
+    from Podcast_Player.models import LivePodcast
+except Exception:
+    LivePodcast = None
 
 def haversine(lat1, lon1, lat2, lon2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -51,6 +58,8 @@ def home_page(request):
     longitude = request.session.get('longitude')
 
     noticias_recentes = Noticia.objects.order_by('-data_postagem')[:50]
+    favoritos = []
+    favoritos_ids = []
     
     print(f"localização:{latitude},{longitude}")
 
@@ -66,8 +75,31 @@ def home_page(request):
     else:
         noticias = random.sample(list(noticias_recentes), min(5, len(noticias_recentes)))
 
-    favoritos_ids = request.user.perfil.relevantes.values_list('id', flat=True)
-    favoritos = Noticia.objects.filter(id__in=favoritos_ids)
+    if user.is_authenticated:
+        favoritos_ids = user.perfil.relevantes.values_list('id', flat=True)
+        favoritos = Noticia.objects.filter(id__in=favoritos_ids)
+
+        try:
+            perfil_tags_qs = user.perfil.tags.all()
+        except Exception:
+            perfil_tags_qs = Tag.objects.none()
+
+        if favoritos_ids:
+            fav_tag_ids = Tag.objects.filter(NoticiaComTag__id__in=list(favoritos_ids)).values_list('id', flat=True)
+        else:
+            fav_tag_ids = []
+
+        preferred_tag_ids = set(list(perfil_tags_qs.values_list('id', flat=True))) | set(list(fav_tag_ids))
+
+        if preferred_tag_ids:
+            noticias_by_tags = Noticia.objects.filter(tags__in=list(preferred_tag_ids)).distinct()
+            lista_por_tag = list(noticias_by_tags)
+            if lista_por_tag:
+                noticias = random.sample(lista_por_tag, min(5, len(lista_por_tag)))
+
+    live_podcast = None
+    if LivePodcast is not None:
+            live_podcast = LivePodcast.objects.filter(is_live=True).first()
     
     context = {
         'usuario': user,
@@ -76,11 +108,17 @@ def home_page(request):
         'favoritos_ids': favoritos_ids,
         'logado': user.is_authenticated,
         'jornalista': hasattr(user, "perfil_jornalista"),
+        'live_podcast': live_podcast,
     }
     return render(request, "athena/home.html", context)
 
 def loginPage(request):
     context = {}
+
+    # accept next from GET (when redirecting to login) or POST (after form submit)
+    next_url = request.GET.get('next') or request.POST.get('next')
+    if next_url:
+        context['next'] = next_url
 
     if request.method == 'POST':
         name = request.POST.get('username')
@@ -90,7 +128,9 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-
+            # safe redirect to `next` if provided and allowed
+            if next_url and url_has_allowed_host_and_scheme(next_url, {request.get_host()}):
+                return redirect(next_url)
             return redirect('home')
         else:
             context['error'] = "Nome de usuario ou senha incorreto"
@@ -141,10 +181,22 @@ def UserAccountPage(request):
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags,'context':context})
 
 def NoticiaPage(request,noticiaId):
-
     noticia = Noticia.objects.get(id=noticiaId)
 
-    return render(request, 'athena/noticia.html',{'noticia': noticia})
+    favoritos_ids = []
+    if request.user.is_authenticated:
+        try:
+            favoritos_ids = request.user.perfil.relevantes.values_list('id', flat=True)
+        except Exception:
+            favoritos_ids = []
+
+    context = {
+        'noticia': noticia,
+        'favoritos_ids': list(favoritos_ids),
+        'logado': request.user.is_authenticated,
+    }
+
+    return render(request, 'athena/noticia.html', context)
 
 def PesquisarPorNoticiaPage(request):
     termo = request.GET.get("BarraDePesquisa",'').strip()
@@ -211,7 +263,16 @@ def AddNoticiaPage(request):
 
 def load_more_news(request):
     page = int(request.GET.get("page", 1))
-    noticias_recentes = Noticia.objects.order_by("-data_postagem")
+
+    exclude_param = request.GET.get('exclude', '')
+    exclude_ids = []
+    if exclude_param:
+        try:
+            exclude_ids = [int(x) for x in exclude_param.split(',') if x.strip().isdigit()]
+        except Exception:
+            exclude_ids = []
+
+    noticias_recentes = Noticia.objects.exclude(id__in=exclude_ids).order_by("-data_postagem")
 
     paginator = Paginator(noticias_recentes, 5)
 
@@ -222,10 +283,13 @@ def load_more_news(request):
 
     data = []
     for n in noticias:
+        # ensure excerpt is plain text (strip HTML) to avoid rendering raw tags
+        plain = strip_tags(n.conteudo or "")
+        excerpt = (plain[:150] + "...") if len(plain) > 150 else plain
         data.append({
             "id": n.id,
             "titulo": n.titulo,
-            "excerpt": n.conteudo[:150] + "...",
+            "excerpt": excerpt,
             "data": n.data_postagem.strftime("%d/%m/%Y"),
             "autor": str(n.autor) if n.autor else "",
             "tag": n.tag.nome if hasattr(n, "tag") else "",
@@ -236,4 +300,11 @@ def load_more_news(request):
         "noticias": data,
         "has_next": noticias.has_next()
     })
+
+def need_login(request):
+    """Página simples informando que o usuário precisa entrar para favoritar.
+    Recebe um parâmetro `next` na querystring para redirecionar depois do login.
+    """
+    next_url = request.GET.get('next', '/')
+    return render(request, 'athena/need_login.html', {'next': next_url})
 # Create your views here.

@@ -296,9 +296,56 @@ body{
 }
 
 .favorite-btn i.fas {
-    color: red;
+    color: var(--vermelho);
 }
 
 .favorite-btn i.far {
     color: #555;
+}
+
+/* ===== MINI PODCAST (fixo) ===== */
+.mini-podcast{
+    position:fixed; right:20px; bottom:20px; z-index:1000;
+    width:340px; max-width:calc(100% - 40px);
+    background:var(--branco); border-radius:12px; padding:10px; display:flex; gap:12px; align-items:center;
+    box-shadow:0 12px 40px rgba(0,0,0,0.18);
+}
+.mini-art img{ width:64px; height:64px; object-fit:cover; border-radius:8px; display:block; }
+.mini-meta{ flex:1; min-width:0; }
+.mini-title{ font-weight:700; color:var(--preto); font-size:0.95rem; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mini-badges{ margin-bottom:6px; }
+.live-badge{ background:linear-gradient(90deg,#e11  #ff6b6b); color:#fff; padding:4px 8px; font-weight:700; font-size:0.75rem; border-radius:999px; display:inline-block; }
+.mini-controls{ display:flex; gap:8px; align-items:center; }
+.pod-btn{ background:var(--azul); color:var(--branco); border:none; padding:8px 10px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+.pod-progress{ flex:1; height:8px; background:var(--cinza-medio); border-radius:6px; cursor:pointer; position:relative; overflow:hidden; }
+.pod-progress-filled{ height:100%; background:linear-gradient(90deg,var(--vermelho),var(--amarelo)); width:0%; }
+.mini-time{ color:var(--cinza-escuro); font-size:0.85rem; min-width:40px; text-align:right; }
+
+@media (max-width:480px){
+    .mini-podcast{ left:10px; right:10px; bottom:12px; width:auto; padding:8px; }
+    .mini-art{ display:none; }
+    .mini-title{ font-size:0.9rem; }
+}
+
+/* Favoritar na página de notícia */
+.cartao-noticia{ position:relative; }
+.title-row{ display:flex; align-items:center; gap:12px; justify-content:space-between; }
+.noticia-favorite-btn{ position:relative; top:0; right:0; background:var(--branco); border:2px solid var(--cinza-medio); border-radius:8px; padding:8px 10px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+.noticia-favorite-btn i.fas{ color:var(--vermelho); }
+.noticia-favorite-btn:hover{ transform:translateY(-3px); border-color:var(--vermelho); }
+
+@media (max-width:768px){
+    .title-row{ flex-direction:column; align-items:flex-start; gap:8px; }
+    .noticia-favorite-btn{ align-self:flex-end; }
+}
+
+/* Override: não deixar o botão notícia ficar completamente vermelho quando ativo
+   (o estilo `.favorite-btn.active` torna todo o botão vermelho por padrão) */
+.noticia-favorite-btn.active{
+    background:var(--branco) !important;
+    color:var(--preto) !important;
+    border-color:var(--vermelho) !important;
+}
+.noticia-favorite-btn.active i{
+    color:var(--vermelho) !important;
 }

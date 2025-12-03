@@ -408,6 +408,6 @@ header.style.boxShadow = 'var(–shadow)';
 }
 });
 
-console.log('🎉 Portal do Jornal do Commercio carregado com sucesso!');
+console.log('🎉 Portal do Jornal do Comercio carregado com sucesso!');
 console.log('📰 Total de notícias:', newsData.length);
 console.log('❤ Favoritos salvos:', favorites.length);

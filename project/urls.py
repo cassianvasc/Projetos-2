@@ -47,9 +47,10 @@ urlpatterns = [
 
     path("load-more-news/", views.load_more_news, name="load_more_news"),
 
-    path('player/<int:Podcast_id>/', views_podcast.podcast_player, name='player'),
+    path('player/<int:podcast_id>/', views_podcast.podcast_player, name='player'),
 
-    path('api/status/<int:Podcast_Player_id>/', views_podcast.podcast_status, name='status'),
+    path('api/status/<int:podcast_id>/', views_podcast.podcast_status, name='status'),
+    path('need-login/', views.need_login, name='need_login'),
 
     path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
     

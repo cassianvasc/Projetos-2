@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from Jornalista.models import *
 from .models import *
+from Podcast_Player.models import LivePodcast
 import time
 
 from selenium import webdriver
@@ -13,6 +14,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -245,5 +247,140 @@ class TesteE2E(LiveServerTestCase):
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.NAME,"context"))
         )
+
+    def test_add_noticia_jornalista(self):
+        # create a user and journalist profile, then login and add a noticia
+        username = 'jornalista_add'
+        password = 'Senha123!'
+        user = User.objects.create_user(username=username, password=password)
+        jornalista = perfilJornalista.objects.create(user=user)
+
+        # go to login page and sign in
+        self.browser.get(f'{self.live_server_url}/login/')
+        usernameInput = self.browser.find_element(By.NAME,'username')
+        passwordInput = self.browser.find_element(By.NAME,'password')
+        usernameInput.send_keys(username)
+        passwordInput.send_keys(password)
+        passwordInput.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,'user'))
+        )
+
+        # click the "Adicionar Noticia" button/link in the header
+        add_link = WebDriverWait(self.browser, 10).until(
+            expected_conditions.element_to_be_clickable((By.LINK_TEXT, 'Adicionar Noticia'))
+        )
+        add_link.click()
+
+        # wait for addNoticia form to load (titulo field should be present)
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
+        )
+
+        # fill the form
+        tituloInput = self.browser.find_element(By.NAME, 'titulo')
+        regiaoInput = self.browser.find_element(By.NAME, 'regiao')
+        conteudoInput = self.browser.find_element(By.NAME, 'conteudo')
+
+        tituloInput.send_keys('Teste E2E - Nova Notícia')
+        regiaoInput.send_keys('Recife')
+        conteudoInput.send_keys('Conteúdo de teste para a nova notícia criada pelo E2E.')
+
+        # submit the form
+        submitBtn = self.browser.find_element(By.CSS_SELECTOR, 'button.botao-principal')
+        submitBtn.click()
+
+        # wait until redirected back to home (header user element visible)
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,'user'))
+        )
+
+        # assert that noticia was created in the database
+        from Jornalista.models import Noticia
+        self.assertTrue(Noticia.objects.filter(titulo='Teste E2E - Nova Notícia').exists())
+
+    def test_add_noticia_with_tags(self):
+        # create a user and journalist profile, tags, then login and add a noticia with tags
+        username = 'jornalista_tags'
+        password = 'Senha123!'
+        user = User.objects.create_user(username=username, password=password)
+        jornalista = perfilJornalista.objects.create(user=user)
+
+        # create tags before rendering form so they appear in select
+        tag1 = Tag.objects.create(nome='Política')
+        tag2 = Tag.objects.create(nome='Economia')
+
+        # login
+        self.browser.get(f'{self.live_server_url}/login/')
+        usernameInput = self.browser.find_element(By.NAME,'username')
+        passwordInput = self.browser.find_element(By.NAME,'password')
+        usernameInput.send_keys(username)
+        passwordInput.send_keys(password)
+        passwordInput.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,'user'))
+        )
+
+        # navigate to add noticia
+        add_link = WebDriverWait(self.browser, 10).until(
+            expected_conditions.element_to_be_clickable((By.LINK_TEXT, 'Adicionar Noticia'))
+        )
+        add_link.click()
+
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
+        )
+
+        # fill basic fields
+        self.browser.find_element(By.NAME, 'titulo').send_keys('Teste Tags')
+        self.browser.find_element(By.NAME, 'regiao').send_keys('Recife')
+
+        # select tags using Select helper
+        select_elem = Select(self.browser.find_element(By.NAME, 'tags'))
+        # select by visible text (matches Tag.nome)
+        select_elem.select_by_visible_text('Política')
+        select_elem.select_by_visible_text('Economia')
+
+        # fill content (if CKEditor present this may need JS injection; try textarea)
+        conteudo = self.browser.find_element(By.NAME, 'conteudo')
+        conteudo.send_keys('Conteúdo com tags para teste.')
+
+        # submit
+        self.browser.find_element(By.CSS_SELECTOR, 'button.botao-principal').click()
+
+        # wait until redirected back to home
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME,'user'))
+        )
+
+        # verify noticia created and tags associated
+        from Jornalista.models import Noticia
+        noticia = Noticia.objects.filter(titulo='Teste Tags').first()
+        self.assertIsNotNone(noticia)
+        tag_names = set([t.nome for t in noticia.tags.all()])
+        self.assertTrue('Política' in tag_names and 'Economia' in tag_names)
+
+    def test_podcast_live_shows_on_home(self):
+        
+        if LivePodcast is None:
+            self.skipTest('Podcast_Player app not available')
+
+        lp = LivePodcast.objects.create(title='Ao Vivo - Teste', stream_url='https://example.com/stream.mp3', is_live=True)
+
+        # visit home
+        self.browser.get(f'{self.live_server_url}/')
+
+        # wait for mini-player and check title and live badge
+        mini = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, 'miniPodcast'))
+        )
+
+        title_el = self.browser.find_element(By.ID, 'miniPodcastTitle')
+        self.assertIn('Ao Vivo - Teste', title_el.text)
+
+        live_badge = self.browser.find_element(By.CLASS_NAME, 'live-badge')
+        self.assertTrue(live_badge.is_displayed())
 
 # Create your tests here.
