@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const originalText = loadMoreBtn.innerHTML;
         loadMoreBtn.innerHTML = 'Carregando... <i class="fas fa-spinner fa-spin"></i>';
 
-        // collect IDs already displayed to avoid duplicates
         const existingIds = Array.from(newsGrid.querySelectorAll('.favorite-btn'))
             .map(b => b.dataset.id)
             .filter(Boolean);

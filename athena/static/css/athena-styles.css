@@ -42,7 +42,7 @@ body{
     padding:0;
 }
 
-.uol-bar__logo img{ height:30px; width:auto; }
+.uol-bar__logo img{ height:70px; width:auto; }
 
 /* page-wrapper centraliza conteúdo entre os anúncios */
 .page-wrapper{
@@ -128,6 +128,13 @@ body{
 }
 
 .logo{ display:flex; align-items:center; }
+
+.jc-logo{
+    height:60px;
+    width:auto;
+    object-fit:contain;
+}
+
 .jc-mark{
     width:58px;
     height:58px;
