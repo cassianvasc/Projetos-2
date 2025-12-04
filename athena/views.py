@@ -126,7 +126,6 @@ def home_page(request):
 def loginPage(request):
     context = {}
 
-    # accept next from GET (when redirecting to login) or POST (after form submit)
     next_url = request.GET.get('next') or request.POST.get('next')
     if next_url:
         context['next'] = next_url
@@ -135,7 +134,14 @@ def loginPage(request):
         name = request.POST.get('username')
         password = request.POST.get('password')
 
-        user = authenticate(request, username=name,password=password)
+        user = authenticate(request, username=name, password=password)
+        
+        if user is None:
+            try:
+                user_obj = User.objects.get(email=name)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
 
         if user is not None:
             login(request, user)
@@ -144,7 +150,7 @@ def loginPage(request):
                 return redirect(next_url)
             return redirect('home')
         else:
-            context['error'] = "Nome de usuario ou senha incorreto"
+            context['error'] = "Nome de usuario/email ou senha incorreto"
 
     return render(request, "athena/login.html", context)
 
@@ -173,10 +179,12 @@ def registerPage(request):
     return render(request, "athena/register.html",context)
 
 def UserAccountPage(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    
     user = request.user
+    
+    # Se não autenticado, mostra página com botão de login
+    if not user.is_authenticated:
+        return render(request, "athena/UserAccount.html", {'usuario': None, 'tags': []})
+    
     perfil = user.perfil
     context = None
 
@@ -273,8 +281,6 @@ def AddNoticiaPage(request):
     return render(request, 'athena/addNoticia.html', {"form": form})
 
 def load_more_news(request):
-    page = int(request.GET.get("page", 1))
-
     exclude_param = request.GET.get('exclude', '')
     exclude_ids = []
     if exclude_param:
@@ -283,33 +289,39 @@ def load_more_news(request):
         except Exception:
             exclude_ids = []
 
-    noticias_recentes = Noticia.objects.exclude(id__in=exclude_ids).order_by("-data_postagem")
-
-    paginator = Paginator(noticias_recentes, 5)
-
-    try:
-        noticias = paginator.page(page)
-    except:
-        return JsonResponse({"noticias": [], "has_next": False})
+    # Get news not already displayed, ordered by most recent
+    noticias = Noticia.objects.exclude(id__in=exclude_ids).order_by("-data_postagem")[:5]
 
     data = []
     for n in noticias:
-        # ensure excerpt is plain text (strip HTML) to avoid rendering raw tags
-        plain = strip_tags(n.conteudo or "")
-        excerpt = (plain[:150] + "...") if len(plain) > 150 else plain
+        # Use resumo if available, otherwise fallback to truncated content
+        if n.resumo:
+            excerpt = n.resumo
+        else:
+            plain = strip_tags(n.conteudo or "")
+            excerpt = (plain[:150] + "...") if len(plain) > 150 else plain
+        
+        # Get first tag if exists
+        first_tag = n.tags.first()
+        tag_name = first_tag.nome if first_tag else ""
+        
         data.append({
             "id": n.id,
             "titulo": n.titulo,
             "excerpt": excerpt,
             "data": n.data_postagem.strftime("%d/%m/%Y"),
             "autor": str(n.autor) if n.autor else "",
-            "tag": n.tag.nome if hasattr(n, "tag") else "",
+            "tag": tag_name,
             "imagem": n.imagem.url if n.imagem else None
         })
 
+    # Check if there are more news after these
+    total_noticias = Noticia.objects.exclude(id__in=exclude_ids).count()
+    has_next = total_noticias > len(data)
+
     return JsonResponse({
         "noticias": data,
-        "has_next": noticias.has_next()
+        "has_next": has_next
     })
 
 def need_login(request):

@@ -66,6 +66,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const navLinksAll = Array.from(document.querySelectorAll(".nav-menu a"));
     const hashLinks = navLinksAll.filter(a => a.getAttribute("href")?.startsWith("#"));
     const homeLink = navLinksAll.find(a => !(a.getAttribute("href") || "").startsWith("#")) || navLinksAll[0];
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.querySelector('.hamburger-btn');
+    const sidebarClose = document.querySelector('.sidebar__close');
+
+    function openSidebar(){
+        if (!sidebar || !sidebarOverlay) return;
+        sidebar.classList.add('open');
+        sidebar.setAttribute('aria-hidden','false');
+        sidebarOverlay.classList.add('visible');
+        sidebarOverlay.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar(){
+        if (!sidebar || !sidebarOverlay) return;
+        sidebar.classList.remove('open');
+        sidebar.setAttribute('aria-hidden','true');
+        sidebarOverlay.classList.remove('visible');
+        sidebarOverlay.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+    }
+
+    hamburger?.addEventListener('click', openSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+    sidebarClose?.addEventListener('click', closeSidebar);
+    // Delegated fallback: garante funcionamento mesmo se os elementos forem recriados
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.hamburger-btn')) {
+            e.preventDefault();
+            openSidebar();
+        }
+        if (e.target.closest('.sidebar__close')) {
+            e.preventDefault();
+            closeSidebar();
+        }
+        if (e.target === sidebarOverlay) {
+            closeSidebar();
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeSidebar();
+    });
 
     function clearActive() {
         navLinksAll.forEach(l => l.classList.remove("active"));

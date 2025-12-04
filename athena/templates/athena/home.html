@@ -10,6 +10,13 @@
     <script src="{% static 'js/load_more_news.js' %}"></script>
 </head>
 <body>
+    <!-- Barra superior fixa com logo UOL -->
+    <div class="uol-bar" role="banner">
+        <a href="https://www.uol.com.br/" class="uol-bar__logo" aria-label="UOL">
+            <img src="https://s3.static.uol.com.br/site/uol/modules/commons/assets/img/logo-uol.png" alt="Logo UOL">
+        </a>
+    </div>
+
     <!-- Blocos de anúncio (aparecem apenas em telas grandes) -->
     <div class="ad-left" aria-hidden="true">
         <div class="ad-inner">Publicidade</div>
@@ -18,70 +25,80 @@
         <div class="ad-inner">Publicidade</div>
     </div>
 
-    <div class="page-wrapper">
-        <!-- Header -->
-        <header class="header">
-            <div class="container header-content">
-                <div class="logo">
-                    <h1><i class="fas fa-newspaper"></i> Jornal do Comercio</h1>
-                </div>
+    <!-- Header fora do page-wrapper para ocupar largura total -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="{% url 'home' %}" class="logo" aria-label="Jornal do Comercio">
+                <span class="jc-mark" aria-hidden="true">JC</span>
+            </a>
 
-                <nav class="nav-menu" aria-label="Menu principal">
-                    <ul>
-                        <li><a href="{% url 'home' %}">Início</a></li>
-                        <li><a href="#favoritos">Favoritos</a></li>
-                        <li><a href="#sobre">Sobre</a></li>
-                    </ul>
-                </nav>
+            <nav class="nav-menu" aria-label="Menu principal">
+                <ul>
+                    <li><a href="{% url 'home' %}">Início</a></li>
+                    <li><a href="#favoritos">Favoritos</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                </ul>
+            </nav>
 
-                <div class="header-actions">
-                    {% if user.is_authenticated %}
-                        {% if jornalista %}
-                            <a href="{% url 'addNoticia' %}" class="header-btn login-btn">
-                                <i class="fas fa-plus"></i> Adicionar Noticia
-                            </a>
-                        {% endif %}
-
-                        <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
-                            <i class="fas fa-user"></i> Minha Conta
-                        </a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="header-btn login-btn">
-                            <i class="fas fa-right-to-bracket"></i> Login
+            <div class="header-actions">
+                <button class="hamburger-btn" type="button" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                {% if user.is_authenticated %}
+                    {% if jornalista %}
+                        <a href="{% url 'addNoticia' %}" class="header-btn login-btn">
+                            <i class="fas fa-plus"></i>
                         </a>
                     {% endif %}
-                </div>
-            </div>
-        </header>
 
-        <!-- Barra de Busca -->
-        <section class="search-section">
-            <div class="container">
-                <div class="search-bar">
+                    <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar acionada pelo botão hambúrguer -->
+    <aside class="sidebar" id="sidebar" aria-hidden="true">
+            <div class="sidebar__header">
+                <span class="sidebar__title">Explorar</span>
+                <button class="sidebar__close" type="button" aria-label="Fechar menu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="sidebar__content">
+                <div class="sidebar-search">
                     <form method="get" action="{% url 'pesquisa' %}">
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        <label for="searchInput" class="sr-only">Buscar notícias</label>
-                        <input type="text" name="BarraDePesquisa" id="searchInput" placeholder="Buscar notícias..." />
-                        <button type="submit" class="search-btn" id="searchBtn">Buscar</button>
+                        <label for="sidebarSearchInput" class="sr-only">Buscar notícias</label>
+                        <input type="text" name="BarraDePesquisa" id="sidebarSearchInput" placeholder="Buscar notícias..." />
+                        <button type="submit" class="sidebar-search-btn" aria-label="Buscar"><i class="fas fa-search"></i></button>
                     </form>
                 </div>
-            </div>
-        </section>
 
-        <!-- Categorias -->
-        <section class="categories-section">
-            <div class="container">
-                <div class="categories">
-                    <a href="{% url 'home' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
-                    <a href="{% url 'noticias_por_tag' 'politica' %}"><button class="category-btn" data-category="politica">Política</button></a>
-                    <a href="{% url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
-                    <a href="{% url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>
-                    <a href="{% url 'noticias_por_tag' 'tecnologia' %}"><button class="category-btn" data-category="tecnologia">Tecnologia</button></a>
-                    <a href="{% url 'noticias_por_tag' 'cultura' %}"><button class="category-btn" data-category="cultura">Cultura</button></a>
-                    <a href="{% url 'noticias_por_tag' 'mundo' %}"><button class="category-btn" data-category="mundo">Mundo</button></a>
+                <div class="sidebar-tags">
+                    <h4>Tags</h4>
+                    <div class="sidebar-tags__list">
+                        <a href="{% url 'home' %}"><button class="category-btn active" data-category="todas">Todas</button></a>
+                        <a href="{% url 'noticias_por_tag' 'politica' %}"><button class="category-btn" data-category="politica">Política</button></a>
+                        <a href="{% url 'noticias_por_tag' 'economia' %}"><button class="category-btn" data-category="economia">Economia</button></a>
+                        <a href="{% url 'noticias_por_tag' 'esportes' %}"><button class="category-btn" data-category="esportes">Esportes</button></a>
+                        <a href="{% url 'noticias_por_tag' 'tecnologia' %}"><button class="category-btn" data-category="tecnologia">Tecnologia</button></a>
+                        <a href="{% url 'noticias_por_tag' 'cultura' %}"><button class="category-btn" data-category="cultura">Cultura</button></a>
+                        <a href="{% url 'noticias_por_tag' 'mundo' %}"><button class="category-btn" data-category="mundo">Mundo</button></a>
+                    </div>
                 </div>
             </div>
-        </section>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+    <div class="page-wrapper">
 
         <!-- Notícia em Destaque -->
         <section class="featured-section">
@@ -116,6 +133,19 @@
                 <div class="news-grid" id="newsGrid">
                     {% for noticia in noticias %}
                     <article class="news-card">
+                        <a href="{% url 'noticia' noticia.id %}" class="news-card-link"></a>
+                        <div class="news-content">
+                            <div class="red-bar"></div>
+                            <p class="news-excerpt">{{ noticia.resumo|default:noticia.conteudo|truncatewords:25|safe }}</p>
+                            <button class="favorite-btn" data-id="{{ noticia.id }}" aria-label="Adicionar aos favoritos">
+                            {% if noticia.id in favoritos_ids %}
+                                <i class="fas fa-heart filled"></i>
+                            {% else %}
+                                <i class="far fa-heart"></i>
+                            {% endif %}                            
+                            </button>
+                        </div>
+                        
                         <div class="news-image">
                             {% if noticia.imagem %}
                                 <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
@@ -125,27 +155,6 @@
                             {% if noticia.tag %}
                                 <span class="category-tag">{{ noticia.tag|title }}</span>
                             {% endif %}
-                        </div>
-
-                        <div class="news-content">
-                            <h3 class="news-title">{{ noticia.titulo }}</h3>
-                            <p class="news-meta">
-                                <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \\d\\e F, Y" }}</span>
-                                {% if noticia.autor %}
-                                    <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
-                                {% endif %}
-                            </p>
-                            <p class="news-excerpt">{{ noticia.conteudo|truncatewords:25|safe }}</p>
-
-                            <a name="{{ noticia.id }}" href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
-
-                            <button class="favorite-btn" data-id="{{ noticia.id }}" aria-label="Adicionar aos favoritos">
-                            {% if noticia.id in favoritos_ids %}
-                                <i class="fas fa-heart filled"></i>
-                            {% else %}
-                                <i class="far fa-heart"></i>
-                            {% endif %}                            
-                            </button>
                         </div>
                     </article>
                     {% empty %}
@@ -168,6 +177,7 @@
             {% if favoritos %}
                 {% for noticia in favoritos %}
                     <article class="news-card">
+                        <a href="{% url 'noticia' noticia.id %}" class="news-card-link"></a>
                         <div class="news-image">
                             {% if noticia.imagem %}
                                 <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
@@ -187,8 +197,6 @@
                                     <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
                                 {% endif %}
                             </p>
-
-                            <a href="{% url 'noticia' noticia.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
 
                             <button class="favorite-btn" data-id="{{ noticia.id }}">
                                 <i class="fas fa-heart filled"></i>

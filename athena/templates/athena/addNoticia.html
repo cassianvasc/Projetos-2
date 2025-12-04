@@ -233,6 +233,15 @@
                 </div>
 
                 <div class="campo-form" style="grid-column: 1 / -1;">
+                    <label for="{{ form.resumo.id_for_label }}">Resumo da notícia</label>
+                    <small>Máximo de 200 caracteres – será exibido na home e pesquisas.</small>
+                    {{ form.resumo }}
+                    {% if form.resumo.errors %}
+                        <div class="erros-campo">{{ form.resumo.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="campo-form" style="grid-column: 1 / -1;">
                     <label for="{{ form.conteudo.id_for_label }}">Conteúdo da notícia</label>
                     {{ form.conteudo }}
                     {% if form.conteudo.errors %}

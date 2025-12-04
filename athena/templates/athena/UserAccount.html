@@ -6,49 +6,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/useraccount.css' %}">
-    <title>Selecione suas Tags</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Minha Conta</title>
 </head>
 <body>
-
-    <!-- Logo no topo -->
-    <div class="logo">
-        <img src="{% static 'images/athena-logo.png' %}" alt="Athena">
-    </div>
+    <!-- Botão voltar fixo no canto superior esquerdo -->
+    <a href="{% url 'home' %}" class="back-btn-fixed" aria-label="Voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
     <div class="container">
-        <h1 class="text-center">Escolha seus Interesses</h1>
-        
-        <div class="divider divider-red"></div>
+        <!-- Ícone grande de usuário -->
+        <div class="user-icon-large">
+            <i class="fas fa-user-circle"></i>
+        </div>
 
-        <p class="subtitle text-center">Selecione as tags que representam seus interesses e preferências</p>
+        {% if user.is_authenticated %}
+            <!-- Se o usuário está logado, mostra opções de tags -->
+            <h1 class="text-center">Olá, {{ user.username }}!</h1>
+            
+            <div class="divider divider-red"></div>
 
-        <form method="POST" class="spacing-medium">
-            {% csrf_token %}
+            <p class="subtitle text-center">Escolha seus interesses para personalizar suas notícias</p>
 
-            <div class="tags-grid">
-                {% for tag in tags %}
-                    <label class="tag-item">
-                        <input type="checkbox" 
-                               name="tags" 
-                               value="{{ tag.id }}" 
-                               {% if tag in usuario.perfil.tags.all %} checked {% endif %}>
-                        <span class="tag-label">{{ tag.nome }}</span>
-                    </label>
-                {% endfor %}
+            <form method="POST" class="spacing-medium">
+                {% csrf_token %}
+
+                <div class="tags-grid">
+                    {% for tag in tags %}
+                        <label class="tag-item">
+                            <input type="checkbox" 
+                                   name="tags" 
+                                   value="{{ tag.id }}" 
+                                   {% if tag in usuario.perfil.tags.all %} checked {% endif %}>
+                            <span class="tag-label">{{ tag.nome }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+
+                <button name="save" type="submit" class="btn btn-primary btn-full">Salvar Preferências</button>
+
+                {% if context %}
+                    <p name="context" class="success-message">{{ context }}</p>
+                {% endif %}
+            </form>
+        {% else %}
+            <!-- Se não está logado, mostra botão de login -->
+            <h1 class="text-center">Faça Login</h1>
+            
+            <div class="divider divider-red"></div>
+
+            <div class="login-actions">
+                <a href="{% url 'login' %}?next={% url 'UserAccount' %}" class="btn btn-primary btn-full">
+                    <i class="fas fa-right-to-bracket"></i> Entrar
+                </a>
+                <p class="text-center spacing-medium">Não tem conta? <a href="{% url 'register' %}" class="link-primary">Criar conta</a></p>
             </div>
-
-            <button name="save" type="submit" class="btn btn-primary btn-full">Salvar Preferências</button>
-
-            {% if context %}
-                <p name="context">{{ context }}</p>
-            {% endif %}
-        </form>
-
-        <div class="divider"></div>
-
-        <p class="text-center">
-            <a href="{% url 'home' %}" class="back-btn"><i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar</a>
-        </p>
+        {% endif %}
     </div>
 
 </body>

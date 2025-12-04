@@ -15,15 +15,40 @@
 
 </head>
 <body>
+    <!-- Barra UOL -->
+    <div class="uol-bar" role="banner">
+        <a href="https://www.uol.com.br/" class="uol-bar__logo" aria-label="UOL">
+            <img src="https://s3.static.uol.com.br/site/uol/modules/commons/assets/img/logo-uol.png" alt="Logo UOL">
+        </a>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'home' %}" class="logo" aria-label="Jornal do Comercio">
+                <span class="jc-mark" aria-hidden="true">JC</span>
+            </a>
+
+            <div class="header-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Botão voltar fixo -->
+    <a href="{% url 'home' %}" class="back-btn-fixed" aria-label="Voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
 
 <div class="pagina-noticia-container">
-
-    <div class="barra-superior-noticia">
-        <a href="/" class="link-voltar-noticia back-btn">
-            <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar
-        </a>
-        <div class="titulo-secao-noticia">Notícia</div>
-    </div>
 
     <div class="layout-noticia">
 
@@ -65,7 +90,7 @@
                 </div>
 
                 <div class="conteudo-noticia">
-                    {{ noticia.conteudo|linebreaks }}
+                    {{ noticia.conteudo|safe }}
                 </div>
 
                 {% if noticia.tags.all %}

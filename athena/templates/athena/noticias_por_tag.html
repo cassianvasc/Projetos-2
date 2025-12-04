@@ -1,47 +1,89 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/noticiasportag.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>{{ tag.nome }}</title>
 </head>
 <body>
+    <!-- Barra UOL -->
+    <div class="uol-bar" role="banner">
+        <a href="https://www.uol.com.br/" class="uol-bar__logo" aria-label="UOL">
+            <img src="https://s3.static.uol.com.br/site/uol/modules/commons/assets/img/logo-uol.png" alt="Logo UOL">
+        </a>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'home' %}" class="logo" aria-label="Jornal do Comercio">
+                <span class="jc-mark" aria-hidden="true">JC</span>
+            </a>
+
+            <div class="header-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Botão voltar fixo -->
+    <a href="{% url 'home' %}" class="back-btn-fixed" aria-label="Voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
         
     {% block content %}
     <div class="container my-5">
         <h1 class="mb-4">Notícias sobre: {{ tag.nome }}</h1> 
-        <p class="lead">Exibindo {{ noticias.count }} resultados.</p>
 
         <hr>
         
         {% if noticias %}
-            {% for noticia in noticias %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ noticia.titulo }}</h5>
-                        
-                        <div class="tags-list">
-                            {% for t in noticia.tags.all %}
-                                <a href="{% url 'noticias_por_tag' t.slug %}" class="badge bg-primary text-decoration-none me-2">{{ t.nome }}</a>
-                            {% endfor %}
+            <div class="news-grid">
+                {% for noticia in noticias %}
+                    <article class="news-card">
+                        <a href="{% url 'noticia' noticia.id %}" class="news-card-link"></a>
+                        <div class="news-image">
+                            {% if noticia.imagem %}
+                                <img src="{{ noticia.imagem.url }}" alt="{{ noticia.titulo }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem" alt="Sem imagem">
+                            {% endif %}
+                            {% if noticia.tag %}
+                                <span class="category-tag">{{ noticia.tag|title }}</span>
+                            {% endif %}
                         </div>
-                        
-                        <small class="text-muted">Publicado em: {{ noticia.data_postagem|date:"d/m/Y" }}</small>
-                        <p class="card-text mt-2">{{ noticia.conteudo|truncatewords:30|safe }}</p>
-                        <a href="{% url 'noticia' noticia.id %}" class="btn btn-sm btn-outline-dark">Ler Mais</a>
-                    </div>
-                </div>
-            {% endfor %}
+
+                        <div class="news-content">
+                            <h3 class="news-title">{{ noticia.titulo }}</h3>
+                            <p class="news-meta">
+                                <span><i class="far fa-calendar"></i> {{ noticia.data_postagem|date:"d \\d\\e F, Y" }}</span>
+                                {% if noticia.autor %}
+                                    <span><i class="far fa-user"></i> Por {{ noticia.autor }}</span>
+                                {% endif %}
+                            </p>
+                            <p class="news-excerpt">{{ noticia.resumo|default:noticia.conteudo|truncatewords:25|safe }}</p>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
         {% else %}
             <p>Não há notícias publicadas com a tag "{{ tag.nome }}".</p>
         {% endif %}
 
     </div>
     {% endblock content %}
-
-    <a href="{% url 'home' %}">← Home</a>
 
 </body>
 </html>

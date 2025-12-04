@@ -13,6 +13,7 @@ class Perfil(models.Model):
 class Noticia(models.Model):
     autor = models.ForeignKey(Perfil, on_delete=models.CASCADE)
     titulo = models.CharField(max_length=50)
+    resumo = models.CharField(max_length=200, blank=True, null=True, help_text="Resumo da notícia que aparecerá na home e pesquisas")
     conteudo = RichTextField()
     imagem = models.ImageField(upload_to='noticias/', blank=True, null=True)
     data_postagem = models.DateTimeField(auto_now_add=True)

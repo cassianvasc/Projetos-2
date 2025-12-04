@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const newsGrid = document.getElementById('newsGrid');
     if (!loadMoreBtn || !newsGrid) return;
 
-    let page = 2; // first page already rendered server-side
     let loading = false;
 
     loadMoreBtn.addEventListener('click', function (e) {
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const excludeParam = existingIds.length ? `&exclude=${existingIds.join(',')}` : '';
 
-        fetch(`/load-more-news/?page=${page}${excludeParam}`)
+        fetch(`/load-more-news/?${excludeParam}`)
             .then(res => {
                 if (!res.ok) throw new Error('Falha ao carregar notícias');
                 return res.json();
@@ -32,26 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     article.className = 'news-card';
 
                     const imgSrc = n.imagem || 'https://via.placeholder.com/400x250/cccccc/000000?text=Sem+Imagem';
-                    const tagHtml = n.tag ? `<span class="category-tag">${escapeHtml(n.tag)}</span>` : '';
 
                     article.innerHTML = `
-                        <div class="news-image">
-                            <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(n.titulo)}">
-                            ${tagHtml}
-                        </div>
+                        <a href="/noticia/${n.id}/" class="news-card-link"></a>
                         <div class="news-content">
-                            <h3 class="news-title">${escapeHtml(n.titulo)}</h3>
-                            <p class="news-meta">
-                                <span><i class="far fa-calendar"></i> ${escapeHtml(n.data)}</span>
-                                ${n.autor ? `<span><i class="far fa-user"></i> Por ${escapeHtml(n.autor)}</span>` : ''}
-                            </p>
+                            <div class="red-bar"></div>
                             <p class="news-excerpt">${escapeHtml(n.excerpt)}</p>
-
-                            <a name="${n.id}" href="/noticia/${n.id}/" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
-
                             <button class="favorite-btn" data-id="${n.id}" aria-label="Adicionar aos favoritos">
                                 <i class="far fa-heart"></i>
                             </button>
+                        </div>
+                        <div class="news-image">
+                            <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(n.titulo)}">
                         </div>
                     `;
 
@@ -60,8 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!data.has_next) {
                     loadMoreBtn.style.display = 'none';
-                } else {
-                    page += 1;
                 }
 
             })
