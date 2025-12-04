@@ -35,20 +35,20 @@
                 </nav>
 
                 <div class="header-actions">
-                    <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
-                        <i class="fas fa-user"></i> Minha Conta
-                    </a>
+                    {% if user.is_authenticated %}
+                        {% if jornalista %}
+                            <a href="{% url 'addNoticia' %}" class="header-btn login-btn">
+                                <i class="fas fa-plus"></i> Adicionar Noticia
+                            </a>
+                        {% endif %}
 
-                    {% if not user.is_authenticated %}
-                    <a href="{% url 'login' %}" class="header-btn login-btn">
-                        <i class="fas fa-right-to-bracket"></i> Login
-                    </a>
-                    {% endif %}
-
-                    {% if jornalista %}
-                    <a href="{% url 'addNoticia' %}" class="header-btn login-btn">
-                        <i class="fas fa-right-to-bracket"></i> Adicionar Noticia
-                    </a>
+                        <a name="user" href="{% url 'UserAccount' %}" class="header-btn account-btn">
+                            <i class="fas fa-user"></i> Minha Conta
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="header-btn login-btn">
+                            <i class="fas fa-right-to-bracket"></i> Login
+                        </a>
                     {% endif %}
                 </div>
             </div>

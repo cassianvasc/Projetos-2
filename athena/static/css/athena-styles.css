@@ -79,6 +79,35 @@ body{
     padding:16px 0;
 }
 
+/* ===== BOTÃO VOLTAR PADRONIZADO (canto superior esquerdo) ===== */
+.back-btn{
+    position:fixed;
+    top:16px;
+    left:16px;
+    z-index:1200;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--branco);
+    color:var(--preto);
+    border:2px solid var(--cinza-medio);
+    padding:8px 12px;
+    border-radius:999px;
+    text-decoration:none;
+    box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    font-weight:600;
+}
+.back-btn:hover{
+    background:var(--vermelho);
+    color:var(--branco);
+    border-color:var(--vermelho);
+    transform:translateY(-2px);
+}
+
+@media (max-width:480px){
+    .back-btn{ top:10px; left:10px; padding:6px 10px; }
+}
+
 .logo h1{
     font-size:1.25rem;
     color:var(--vermelho);
@@ -233,7 +262,12 @@ body{
     z-index: 5;
 }
 .favorite-btn:hover{ border-color:var(--vermelho); color:var(--vermelho); transform:scale(1.05); }
-.favorite-btn.active{ background:var(--vermelho); border-color:var(--vermelho); color:var(--branco); }
+.favorite-btn.active{
+    background:var(--branco);
+    border-color:var(--vermelho);
+    color:var(--vermelho);
+}
+.favorite-btn.active i, .favorite-btn.active .fas, .favorite-btn.active .far{ color:var(--vermelho); }
 
 /* ===== LOAD MORE ===== */
 .load-more{ text-align:center; padding:20px 0; }
@@ -300,7 +334,7 @@ body{
 }
 
 .favorite-btn i.far {
-    color: #555;
+    color: var(--cinza-escuro);
 }
 
 /* ===== MINI PODCAST (fixo) ===== */
@@ -310,11 +344,11 @@ body{
     background:var(--branco); border-radius:12px; padding:10px; display:flex; gap:12px; align-items:center;
     box-shadow:0 12px 40px rgba(0,0,0,0.18);
 }
-.mini-art img{ width:64px; height:64px; object-fit:cover; border-radius:8px; display:block; }
+.mini-art img{ width:64px !important; height:64px !important; max-width:none !important; object-fit:cover; border-radius:8px; display:block; }
 .mini-meta{ flex:1; min-width:0; }
 .mini-title{ font-weight:700; color:var(--preto); font-size:0.95rem; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .mini-badges{ margin-bottom:6px; }
-.live-badge{ background:linear-gradient(90deg,#e11  #ff6b6b); color:#fff; padding:4px 8px; font-weight:700; font-size:0.75rem; border-radius:999px; display:inline-block; }
+.live-badge{ background:linear-gradient(90deg,var(--vermelho),var(--laranja)); color:var(--branco); padding:4px 8px; font-weight:700; font-size:0.75rem; border-radius:999px; display:inline-block; }
 .mini-controls{ display:flex; gap:8px; align-items:center; }
 .pod-btn{ background:var(--azul); color:var(--branco); border:none; padding:8px 10px; border-radius:8px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
 .pod-progress{ flex:1; height:8px; background:var(--cinza-medio); border-radius:6px; cursor:pointer; position:relative; overflow:hidden; }

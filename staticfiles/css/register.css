@@ -232,7 +232,7 @@ form {
 .btn-accent:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 30px rgba(249, 205, 10, 0.4);
-  background: var(--amarelo);
+  background: #f7c000;
 }
 
 .btn-full {
