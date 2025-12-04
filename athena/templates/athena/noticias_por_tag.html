@@ -84,6 +84,39 @@
 
     </div>
     {% endblock content %}
+    <!-- Player compacto fixo (em todas as páginas relevantes) -->
+    {% if live_podcast %}
+    <div class="mini-podcast" id="miniPodcast" data-podcast-id="{{ live_podcast.id }}" data-stream-url="{{ live_podcast.stream_url }}" aria-live="polite">
+        <div class="mini-art">
+            {% if live_podcast.thumbnail %}
+                <img src="{{ live_podcast.thumbnail.url }}" alt="{{ live_podcast.title }}">
+            {% else %}
+                <img src="https://via.placeholder.com/80x80/2c3e50/ffffff?text=Pt" alt="Arte do Podcast">
+            {% endif %}
+        </div>
+
+        <div class="mini-meta">
+            <div class="mini-title" id="miniPodcastTitle">{{ live_podcast.title }}</div>
+            <div class="mini-badges"><span class="live-badge" id="miniLiveBadge">AO VIVO</span></div>
+            <div class="mini-controls">
+                <button id="podPlayBtn" class="pod-btn" aria-label="Tocar/pausar"><i class="fas fa-play"></i></button>
+                <div class="pod-progress" id="podProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pod-progress-filled" id="podProgressFilled"></div>
+                </div>
+                <div class="mini-time"><span id="podCurrent">0:00</span></div>
+                <div class="pod-volume-container">
+                    <i class="fas fa-volume-up pod-volume-icon"></i>
+                    <input type="range" id="podVolume" class="pod-volume" min="0" max="100" value="100" aria-label="Volume">
+                </div>
+            </div>
+        </div>
+
+        <audio id="podcastAudio" preload="none" style="display:none">
+            <source src="{{ live_podcast.stream_url }}" type="audio/mpeg">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+    </div>
+    {% endif %}
 
 </body>
 </html>

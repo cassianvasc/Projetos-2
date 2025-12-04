@@ -429,6 +429,124 @@ body{
 .newsletter-form button{ padding:10px 14px; border-radius:8px; background:var(--vermelho); color:var(--branco); border:none; cursor:pointer; transition:background .2s ease; }
 .newsletter-form button:hover{ background:var(--laranja); }
 
+/* Feedback Site (substitui newsletter) */
+.feedback-site .form-feedback-site{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.feedback-site .rating-site{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
+
+.feedback-site .rating-site-label{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    background:#fff;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    font-weight:700;
+    color:#111827;
+}
+
+.feedback-site .rating-site-label span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    height:100%;
+    border-radius:inherit;
+    transition:all 0.2s ease;
+}
+
+.feedback-site .rating-site-label:hover{
+    border-color:var(--azul);
+    background:#f4f7ff;
+}
+
+.feedback-site .rating-site-label input{
+    display:none;
+}
+
+.feedback-site .rating-site-label input:checked + span{
+    background:var(--azul);
+    color:#fff;
+    box-shadow:0 0 0 2px var(--azul) inset;
+}
+
+.feedback-site textarea{
+    width:100%;
+    border:1px solid #e5e7eb;
+    border-radius:6px;
+    padding:8px 10px;
+    font-family:inherit;
+    resize:vertical;
+    min-height:64px;
+}
+
+.btn-enviar-feedback-site{
+    align-self:flex-start;
+    padding:10px 14px;
+    background:var(--azul);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    font-weight:700;
+}
+
+.btn-enviar-feedback-site:hover{ background:#1d4ed8; }
+
+#mensagemFeedbackSite{
+    padding:10px;
+    border-radius:6px;
+    font-size:14px;
+}
+
+#mensagemFeedbackSite.sucesso{
+    background:#d1fae5;
+    color:#065f46;
+}
+
+#mensagemFeedbackSite.erro{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ===== LISTA DE FEEDBACKS (página de feedbacks) ===== */
+.feedback-list{ display:flex; flex-direction:column; gap:16px; margin-top:32px; margin-bottom:24px; }
+.feedback-card{
+    padding:24px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    transition:all .2s ease;
+}
+.feedback-card:hover{
+    box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    transform:translateY(-2px);
+    border-color:var(--azul);
+}
+.feedback-card__top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:16px; }
+.feedback-score{ 
+    font-weight:900; 
+    font-size:1.3rem;
+    color:var(--azul); 
+    min-width:70px;
+}
+.feedback-date{ color:#9ca3af; font-size:0.85rem; white-space:nowrap; }
+.feedback-comment{ margin:0; color:#111827; line-height:1.7; font-size:1rem; }
+
 .footer-bottom{ text-align:center; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); }
 
 /* ===== RESPONSIVIDADE ===== */
@@ -485,6 +603,9 @@ body{
 .pod-progress{ flex:1; height:8px; background:var(--cinza-medio); border-radius:6px; cursor:pointer; position:relative; overflow:hidden; }
 .pod-progress-filled{ height:100%; background:linear-gradient(90deg,var(--vermelho),var(--amarelo)); width:0%; }
 .mini-time{ color:var(--cinza-escuro); font-size:0.85rem; min-width:40px; text-align:right; }
+.pod-volume-container{ display:flex; gap:6px; align-items:center; }
+.pod-volume-icon{ color:var(--azul); font-size:0.9rem; }
+.pod-volume{ width:60px; height:6px; cursor:pointer; accent-color:var(--azul); }
 
 @media (max-width:480px){
     .mini-podcast{ left:10px; right:10px; bottom:12px; width:auto; padding:8px; }

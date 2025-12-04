@@ -135,6 +135,43 @@
                 </div>
             </div>
 
+            <!-- Seção de Feedback -->
+            <div class="secao-feedback-noticia">
+                <h3 class="titulo-feedback">Avalie este conteúdo</h3>
+                {% if is_autor %}
+                    <p class="texto-feedback" style="margin-top:4px;">
+                        <a href="{% url 'feedbacks_noticia' noticia.id %}" style="color: var(--azul); text-decoration: underline; font-weight: 600;">Ver feedbacks recebidos</a>
+                    </p>
+                {% endif %}
+                <p class="texto-feedback">Sua opinião nos ajuda a melhorar. Deixe um feedback sobre o conteúdo e a organização desta notícia.</p>
+                
+                <form id="formFeedbackNoticia" class="form-feedback" method="post" action="{% url 'submit_feedback_noticia' noticia.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group-feedback">
+                        <label class="label-feedback">Como você avalia este conteúdo?</label>
+                        <div class="rating-container">
+                            {% for _ in "0123456789"|make_list %}
+                                <label class="rating-label">
+                                    <input type="radio" name="avaliacao" value="{{ forloop.counter }}" class="rating-input" required>
+                                    <span class="rating-value">{{ forloop.counter }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group-feedback">
+                        <label for="id_comentario" class="label-feedback">Seu comentário (opcional)</label>
+                        <textarea id="id_comentario" name="comentario" maxlength="500" placeholder="Deixe seu comentário aqui (máximo 500 caracteres)" rows="4" class="textarea-feedback"></textarea>
+                        <small class="texto-ajuda">Máximo 500 caracteres</small>
+                    </div>
+                    
+                    <button type="submit" class="btn-enviar-feedback">Enviar Feedback</button>
+                </form>
+                
+                <div id="mensagemFeedback" class="mensagem-feedback" style="display: none;"></div>
+            </div>
+
             </div>
         </article>
         <aside>
@@ -160,5 +197,40 @@
 </div>
 
     <script src="{% static 'js/script.js' %}"></script>
+    <!-- Player compacto fixo (em todas as páginas relevantes) -->
+    {% if live_podcast %}
+    <div class="mini-podcast" id="miniPodcast" data-podcast-id="{{ live_podcast.id }}" data-stream-url="{{ live_podcast.stream_url }}" aria-live="polite">
+        <div class="mini-art">
+            {% if live_podcast.thumbnail %}
+                <img src="{{ live_podcast.thumbnail.url }}" alt="{{ live_podcast.title }}">
+            {% else %}
+                <img src="https://via.placeholder.com/80x80/2c3e50/ffffff?text=Pt" alt="Arte do Podcast">
+            {% endif %}
+        </div>
+
+        <div class="mini-meta">
+            <div class="mini-title" id="miniPodcastTitle">{{ live_podcast.title }}</div>
+            <div class="mini-badges"><span class="live-badge" id="miniLiveBadge">AO VIVO</span></div>
+            <div class="mini-controls">
+                <button id="podPlayBtn" class="pod-btn" aria-label="Tocar/pausar"><i class="fas fa-play"></i></button>
+                <div class="pod-progress" id="podProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="pod-progress-filled" id="podProgressFilled"></div>
+                </div>
+                <div class="mini-time"><span id="podCurrent">0:00</span></div>
+                <div class="pod-volume-container">
+                    <i class="fas fa-volume-up pod-volume-icon"></i>
+                    <input type="range" id="podVolume" class="pod-volume" min="0" max="100" value="100" aria-label="Volume">
+                </div>
+            </div>
+        </div>
+
+        <audio id="podcastAudio" preload="none" style="display:none">
+            <source src="{{ live_podcast.stream_url }}" type="audio/mpeg">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+    </div>
+    {% endif %}
+    <script src="{% static 'js/feedback.js' %}"></script>
+    <script src="{% static 'js/persistent-podcast.js' %}"></script>
 </body>
 </html>

@@ -30,7 +30,87 @@ class Perfil(models.Model):
 
     def __str__(self):
        return f"Perfil de {self.user.username}"
+
+
+# NOVO MODELO: Feedback
+class Feedback(models.Model):
+    RATING_CHOICES = [
+        (1, '1 - Muito Ruim'),
+        (2, '2 - Ruim'),
+        (3, '3 - Razoável'),
+        (4, '4 - Bom'),
+        (5, '5 - Muito Bom'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10 - Excelente'),
+    ]
     
+    FEEDBACK_TYPE_CHOICES = [
+        ('noticia', 'Feedback sobre Notícia'),
+        ('site', 'Feedback sobre o Site'),
+    ]
+    
+    # Identificação do feedback
+    tipo = models.CharField(
+        max_length=10,
+        choices=FEEDBACK_TYPE_CHOICES,
+        default='noticia',
+        verbose_name='Tipo de Feedback'
+    )
+    
+    # Relacionamento com notícia (opcional, apenas para feedbacks de notícia)
+    noticia = models.ForeignKey(
+        'Jornalista.Noticia',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='feedbacks',
+        verbose_name='Notícia'
+    )
+    
+    # Avaliação
+    avaliacao = models.IntegerField(
+        choices=RATING_CHOICES,
+        verbose_name='Avaliação (1-10)'
+    )
+    
+    # Comentário
+    comentario = models.TextField(
+        max_length=500,
+        verbose_name='Comentário',
+        help_text='Deixe um comentário sobre o feedback (máximo 500 caracteres)'
+    )
+    
+    # Usuário (opcional, pode ser anônimo)
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='meus_feedbacks',
+        verbose_name='Usuário'
+    )
+    
+    # Metadados
+    data_criacao = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Data de Criação'
+    )
+    
+    class Meta:
+        verbose_name = 'Feedback'
+        verbose_name_plural = 'Feedbacks'
+        ordering = ['-data_criacao']
+    
+    def __str__(self):
+        if self.tipo == 'noticia':
+            return f"Feedback na notícia '{self.noticia.titulo}' - {self.avaliacao}/10"
+        else:
+            return f"Feedback no Site - {self.avaliacao}/10"
+    
+
 """
 class Localização(models.Model):
     session_id = models.CharField(max_length=40, unique=True)

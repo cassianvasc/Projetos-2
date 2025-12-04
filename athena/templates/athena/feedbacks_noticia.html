@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedbacks - {{ noticia.titulo }}</title>
+    <link rel="stylesheet" href="{% static 'css/athena-styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/noticia.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Barra UOL -->
+    <div class="uol-bar" role="banner">
+        <a href="https://www.uol.com.br/" class="uol-bar__logo" aria-label="UOL">
+            <img src="/media/logo-uol-1024.svg" alt="Logo UOL">
+        </a>
+    </div>
+
+    <!-- Botão voltar fixo -->
+    <a href="{% url 'noticia' noticia.id %}" class="back-btn-fixed" aria-label="Voltar">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'home' %}" class="logo" aria-label="Jornal do Comercio">
+                <img src="/media/jcpe-logo.svg" alt="Jornal do Comercio" class="jc-logo">
+            </a>
+        </div>
+    </header>
+
+    <div class="pagina-noticia-container">
+        <main class="cartao-noticia" style="padding: 32px; max-width: 1120px; margin: 0 auto;">
+            <h1 class="titulo-noticia">Feedbacks da notícia</h1>
+            <p style="color:#6b7280; margin-bottom: 4px;">{{ noticia.titulo }}</p>
+            <p style="margin-bottom: 28px;"><strong>Média:</strong> {{ media_avaliacao }}/10 ({{ total_feedbacks }} feedbacks)</p>
+
+            {% if feedbacks %}
+                <div class="feedback-list">
+                    {% for fb in feedbacks %}
+                        <div class="feedback-card">
+                            <div class="feedback-card__top">
+                                <div class="feedback-score">{{ fb.avaliacao }}/10</div>
+                                <small class="feedback-date">{{ fb.data_criacao|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <p class="feedback-comment">{{ fb.comentario|default:"(Sem comentário)" }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Nenhum feedback ainda.</p>
+            {% endif %}
+        </main>
+    </div>
+
+    <script src="{% static 'js/persistent-podcast.js' %}"></script>
+</body>
+</html>

@@ -55,5 +55,10 @@ urlpatterns = [
     path('add/noticia', views.AddNoticiaPage , name="addNoticia"),
     
     path('favorite/notices/<int:noticiaId>/', views.FavoriteNews, name='FavoriteNews'),
+    
+    # Feedback URLs
+    path('feedback/noticia/<int:noticia_id>/', views.submit_feedback_noticia, name='submit_feedback_noticia'),
+    path('feedback/site/', views.submit_feedback_site, name='submit_feedback_site'),
+    path('feedbacks/noticia/<int:noticia_id>/', views.feedbacks_noticia, name='feedbacks_noticia'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

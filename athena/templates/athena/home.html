@@ -104,24 +104,47 @@
         <section class="featured-section">
             <div class="container">
                 <div class="featured-news" id="featuredNews">
-                    <div class="featured-image">
-                        <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Notícia+em+Destaque" alt="Notícia Principal">
-                        <span class="category-tag">Destaque</span>
-                    </div>
-                    <div class="featured-content">
-                        <h2>Manchete Principal: Grandes Mudanças no Cenário Nacional</h2>
-                        <p class="news-meta">
-                            <span><i class="far fa-calendar"></i> 13 de Novembro, 2025</span>
-                            <span><i class="far fa-user"></i> Por João Silva</span>
-                        </p>
-                        <p class="news-excerpt">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
-                        <a href="#" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
-                        <button class="favorite-btn" data-id="featured" aria-label="Adicionar aos favoritos">
-                            <i class="far fa-heart"></i>
-                        </button>
-                    </div>
+                    {% if noticia_destaque %}
+                        <div class="featured-image">
+                            {% if noticia_destaque.imagem %}
+                                <img src="{{ noticia_destaque.imagem.url }}" alt="{{ noticia_destaque.titulo }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Notícia+em+Destaque" alt="Notícia Principal">
+                            {% endif %}
+                            <span class="category-tag">Destaque</span>
+                        </div>
+                        <div class="featured-content">
+                            <h2><a href="{% url 'noticia' noticia_destaque.id %}" style="text-decoration: none; color: inherit;">{{ noticia_destaque.titulo }}</a></h2>
+                            <p class="news-meta">
+                                <span><i class="far fa-calendar"></i> {{ noticia_destaque.data_postagem|date:"d \\d\\e F, Y" }}</span>
+                                {% if noticia_destaque.autor %}
+                                    <span><i class="far fa-user"></i> Por {{ noticia_destaque.autor }}</span>
+                                {% endif %}
+                            </p>
+                            <p class="news-excerpt">
+                                {{ noticia_destaque.resumo|default:noticia_destaque.conteudo|truncatewords:30|safe }}
+                            </p>
+                            <a href="{% url 'noticia' noticia_destaque.id %}" class="read-more-btn">Ler mais <i class="fas fa-arrow-right"></i></a>
+                            <button class="favorite-btn" data-id="{{ noticia_destaque.id }}" aria-label="Adicionar aos favoritos">
+                                {% if noticia_destaque.id in favoritos_ids %}
+                                    <i class="fas fa-heart filled"></i>
+                                {% else %}
+                                    <i class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                        </div>
+                    {% else %}
+                        <div class="featured-image">
+                            <img src="https://via.placeholder.com/1200x600/2c3e50/ffffff?text=Nenhuma+Notícia" alt="Notícia Principal">
+                            <span class="category-tag">Destaque</span>
+                        </div>
+                        <div class="featured-content">
+                            <h2>Nenhuma notícia em destaque no momento</h2>
+                            <p class="news-excerpt">
+                                As notícias em destaque aparecerão aqui assim que forem publicadas.
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -244,13 +267,21 @@
                     </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h4>Newsletter</h4>
-                    <p>Receba as principais notícias no seu e-mail</p>
-                    <form class="newsletter-form" action="#" method="post">
+                <div class="footer-section feedback-site">
+                    <h4>Feedback do Site</h4>
+                    <form id="formFeedbackSite" class="form-feedback-site" method="post" action="{% url 'submit_feedback_site' %}">
                         {% csrf_token %}
-                        <input type="email" name="email" placeholder="Seu e-mail" aria-label="Seu e-mail" required>
-                        <button type="submit" aria-label="Assinar newsletter"><i class="fas fa-paper-plane"></i></button>
+                        <div class="rating-site" aria-label="Avaliação de 1 a 10">
+                            {% for _ in "0123456789"|make_list %}
+                                <label class="rating-site-label">
+                                    <input type="radio" name="avaliacao" value="{{ forloop.counter }}" required>
+                                    <span>{{ forloop.counter }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <textarea name="comentario" rows="2" maxlength="280" placeholder="Deixe um comentário opcional" aria-label="Comentário opcional"></textarea>
+                        <button type="submit" class="btn-enviar-feedback-site">Enviar feedback</button>
+                        <div id="mensagemFeedbackSite" class="mensagem-feedback" style="display:none;"></div>
                     </form>
                 </div>
             </div>
@@ -263,7 +294,9 @@
 
     <script src="{% static 'js/script.js' %}"></script>
     <script src="{% static 'js/GetGeoLocation.js' %}"></script>
-    <!-- Player compacto fixo (apenas na home por enquanto) -->
+    <script src="{% static 'js/feedback.js' %}"></script>
+    <script src="{% static 'js/persistent-podcast.js' %}"></script>
+
     {% if live_podcast %}
     <div class="mini-podcast" id="miniPodcast" data-podcast-id="{{ live_podcast.id }}" data-stream-url="{{ live_podcast.stream_url }}" aria-live="polite">
         <div class="mini-art">
@@ -283,6 +316,10 @@
                     <div class="pod-progress-filled" id="podProgressFilled"></div>
                 </div>
                 <div class="mini-time"><span id="podCurrent">0:00</span></div>
+                <div class="pod-volume-container">
+                    <i class="fas fa-volume-up pod-volume-icon"></i>
+                    <input type="range" id="podVolume" class="pod-volume" min="0" max="100" value="100" aria-label="Volume">
+                </div>
             </div>
         </div>
 

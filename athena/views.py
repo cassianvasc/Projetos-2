@@ -1,16 +1,20 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from .models import Tag
-from .forms import NoticiaForm
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse, JsonResponse
+from django.db import models
+from .models import Tag, Feedback
+from .forms import NoticiaForm, FeedbackForm, FeedbackSiteForm
 from django.shortcuts import render
 from django.shortcuts import render,redirect
 from django.apps import apps
 from django.core.paginator import Paginator
 
 from django.contrib.auth.models import User
+
 from django.contrib.auth import login,authenticate
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
+from Jornalista.models import Noticia, Perfil
+from Podcast_Player.models import LivePodcast
 from .models import *
 
 from django.http import JsonResponse
@@ -21,11 +25,13 @@ from math import radians, cos, sin, asin, sqrt
 import json
 import random
 
-Noticia = apps.get_model('Jornalista', 'Noticia')
-try:
-    from Podcast_Player.models import LivePodcast
-except Exception:
-    LivePodcast = None
+FEATURED_NEWS_ID = None # None = usa a notícia mais recente; coloque o ID desejado aqui;
+
+def get_live_podcast():
+    """Helper function to get live podcast"""
+    if LivePodcast is not None:
+        return LivePodcast.objects.filter(is_live=True).first()
+    return None
 
 def haversine(lat1, lon1, lat2, lon2):
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -40,7 +46,7 @@ def haversine(lat1, lon1, lat2, lon2):
 def FavoriteNews(request, noticiaId):
     if not request.user.is_authenticated:
         return JsonResponse({"success": False, "error": "not_authenticated"}, status=401)
-    # do not assume Perfil exists for authenticated users
+
     user = request.user
     perfil = getattr(user, 'perfil', None)
     if perfil is None:
@@ -48,7 +54,6 @@ def FavoriteNews(request, noticiaId):
 
     noticia = get_object_or_404(Noticia, id=noticiaId)
 
-    # toggle favorito
     if noticia in perfil.relevantes.all():
         perfil.relevantes.remove(noticia)
         return JsonResponse({"success": True, "favorited": False})
@@ -64,6 +69,7 @@ def home_page(request):
     noticias_recentes = Noticia.objects.order_by('-data_postagem')[:50]
     favoritos = []
     favoritos_ids = []
+    live_podcast = None
     
     print(f"localização:{latitude},{longitude}")
 
@@ -108,9 +114,17 @@ def home_page(request):
             if lista_por_tag:
                 noticias = random.sample(lista_por_tag, min(5, len(lista_por_tag)))
 
-    live_podcast = None
     if LivePodcast is not None:
-            live_podcast = LivePodcast.objects.filter(is_live=True).first()
+        live_podcast = LivePodcast.objects.filter(is_live=True).first()
+    
+    # Get featured news - use FEATURED_NEWS_ID constant or most recent
+    if FEATURED_NEWS_ID:
+        try:
+            noticia_destaque = Noticia.objects.get(id=FEATURED_NEWS_ID)
+        except Noticia.DoesNotExist:
+            noticia_destaque = Noticia.objects.order_by('-data_postagem').first()
+    else:
+        noticia_destaque = Noticia.objects.order_by('-data_postagem').first()
     
     context = {
         'usuario': user,
@@ -120,6 +134,7 @@ def home_page(request):
         'logado': user.is_authenticated,
         'jornalista': hasattr(user, "perfil_jornalista"),
         'live_podcast': live_podcast,
+        'noticia_destaque': noticia_destaque,
     }
     return render(request, "athena/home.html", context)
 
@@ -200,7 +215,7 @@ def UserAccountPage(request):
     return render(request, "athena/UserAccount.html",{'usuario': user,'tags':tags,'context':context})
 
 def NoticiaPage(request,noticiaId):
-    noticia = Noticia.objects.get(id=noticiaId)
+    noticia = get_object_or_404(Noticia, id=noticiaId)
 
     favoritos_ids = []
     if request.user.is_authenticated:
@@ -209,10 +224,17 @@ def NoticiaPage(request,noticiaId):
         except Exception:
             favoritos_ids = []
 
+    is_autor = False
+    if request.user.is_authenticated and hasattr(request.user, 'perfil_jornalista'):
+        is_autor = (noticia.autor == request.user.perfil_jornalista)
+
     context = {
         'noticia': noticia,
         'favoritos_ids': list(favoritos_ids),
         'logado': request.user.is_authenticated,
+        'live_podcast': get_live_podcast(),
+        'form': FeedbackForm(),
+        'is_autor': is_autor,
     }
 
     return render(request, 'athena/noticia.html', context)
@@ -229,7 +251,7 @@ def PesquisarPorNoticiaPage(request):
 
     noticias = (noticias_titulo | noticias_tags).distinct()
 
-    return render(request, 'athena/pesquisa.html',{'noticias':noticias,'termo':termo})
+    return render(request, 'athena/pesquisa.html',{'noticias':noticias,'termo':termo,'live_podcast': get_live_podcast()})
 
 def noticias_por_tag(request, tag_slug=None):
 
@@ -243,7 +265,8 @@ def noticias_por_tag(request, tag_slug=None):
 
     context = {
         'tag': tag,
-        'noticias': noticias
+        'noticias': noticias,
+        'live_podcast': get_live_podcast(),
     }
     
     return render(request, 'athena/noticias_por_tag.html', context)
@@ -330,4 +353,80 @@ def need_login(request):
     """
     next_url = request.GET.get('next', '/')
     return render(request, 'athena/need_login.html', {'next': next_url})
+
+
+# ===== VIEWS DE FEEDBACK =====
+
+@require_POST
+def submit_feedback_noticia(request, noticia_id):
+    """Submeter feedback para uma notícia"""
+    noticia = get_object_or_404(Noticia, id=noticia_id)
+    
+    form = FeedbackForm(request.POST)
+    if form.is_valid():
+        feedback = form.save(commit=False)
+        feedback.tipo = 'noticia'
+        feedback.noticia = noticia
+        feedback.usuario = request.user if request.user.is_authenticated else None
+        feedback.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Feedback enviado com sucesso! Obrigado pela sua avaliação.'
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'errors': form.errors
+        }, status=400)
+
+
+@require_POST
+def submit_feedback_site(request):
+    """Submeter feedback geral do site"""
+    form = FeedbackSiteForm(request.POST)
+    if form.is_valid():
+        feedback = form.save(commit=False)
+        feedback.tipo = 'site'
+        feedback.usuario = request.user if request.user.is_authenticated else None
+        feedback.save()
+        return JsonResponse({
+            'success': True,
+            'message': 'Obrigado pelo seu feedback! Ele nos ajuda a melhorar o site.'
+        })
+    else:
+        return JsonResponse({
+            'success': False,
+            'errors': form.errors
+        }, status=400)
+
+
+def feedbacks_noticia(request, noticia_id):
+    """Visualizar feedbacks de uma notícia (apenas para o jornalista que criou)"""
+    noticia = get_object_or_404(Noticia, id=noticia_id)
+    
+    # Verificar se o usuário é o jornalista que criou a notícia
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    # Verificar se tem permissão (é o autor ou é staff)
+    if noticia.autor.user != request.user and not request.user.is_staff:
+        return redirect('home')
+    
+    # Pegar feedbacks da notícia
+    feedbacks = noticia.feedbacks.all().order_by('-data_criacao')
+    
+    # Calcular estatísticas
+    total_feedbacks = feedbacks.count()
+    media_avaliacao = feedbacks.aggregate(models.Avg('avaliacao'))['avaliacao__avg'] or 0
+    
+    context = {
+        'noticia': noticia,
+        'feedbacks': feedbacks,
+        'total_feedbacks': total_feedbacks,
+        'media_avaliacao': round(media_avaliacao, 1),
+        'live_podcast': get_live_podcast(),
+    }
+    
+    return render(request, 'athena/feedbacks_noticia.html', context)
+
 # Create your views here.
