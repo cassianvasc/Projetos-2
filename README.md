@@ -21,16 +21,12 @@ O portal tem como foco **aumentar a fidelidade** e **o engajamento** do público
 As principais tecnologias utilizadas no desenvolvimento do projeto são:
 
 - **Python e django** para desenvolvimento do codigo
-<<<<<<< HEAD
 - **HTML e CSS** para desenvolvimento dos templates
-=======
-- **CSS e HTML** para desenvolvimento dos templates e da interface
->>>>>>> e5a77b1c60d2c6a4c94003ff2637d404a065311e
 -  
 -   
 - 
 ## Link do Deploy:
-[Site](https://projetos-2-2j9f.onrender.com "Site")
+[Site](http://athenas-agb9hwgzb2cucacc.brazilsouth-01.azurewebsites.net/ "Site")
 
 ## Testes Automatizados:
 https://youtu.be/mvB21_SKF_w
