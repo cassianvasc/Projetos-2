@@ -8,6 +8,7 @@ from Jornalista.models import *
 from .models import *
 from Podcast_Player.models import LivePodcast
 import time
+from unittest.mock import patch, MagicMock
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -233,7 +234,7 @@ class TesteE2E(LiveServerTestCase):
         self.browser.get(f'{self.live_server_url}/')
         
         # Aguardar o carregamento completo da página com CSS/JS
-        time.sleep(1)
+        time.sleep(1.5)
 
         # Abrir sidebar para acessar barra de pesquisa
         hamburger_btn = WebDriverWait(self.browser, 10).until(
@@ -241,9 +242,10 @@ class TesteE2E(LiveServerTestCase):
         )
         hamburger_btn.click()
         
-        # Esperar sidebar abrir
+        # Esperar sidebar abrir completamente
+        time.sleep(0.5)
         WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.CLASS_NAME, "sidebar-search"))
+            expected_conditions.visibility_of_element_located((By.CLASS_NAME, "sidebar-search"))
         )
 
         search = self.browser.find_element(By.NAME,"BarraDePesquisa")
@@ -265,7 +267,7 @@ class TesteE2E(LiveServerTestCase):
         self.browser.get(f'{self.live_server_url}/')
         
         # Aguardar o carregamento completo da página
-        time.sleep(1)
+        time.sleep(1.5)
 
         # Abrir sidebar novamente para segunda busca
         hamburger_btn = WebDriverWait(self.browser, 10).until(
@@ -273,8 +275,9 @@ class TesteE2E(LiveServerTestCase):
         )
         hamburger_btn.click()
         
+        time.sleep(0.5)
         WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.CLASS_NAME, "sidebar-search"))
+            expected_conditions.visibility_of_element_located((By.CLASS_NAME, "sidebar-search"))
         )
 
         search = self.browser.find_element(By.NAME,"BarraDePesquisa")
@@ -305,12 +308,22 @@ class TesteE2E(LiveServerTestCase):
         resp = self.client.get('/add/noticia')
         self.assertEqual(resp.status_code, 200)
         
-        # Testar POST de criação de notícia
-        resp = self.client.post('/add/noticia', {
-            'titulo': 'Teste E2E - Nova Notícia',
-            'regiao': 'Recife',
-            'conteudo': 'Conteúdo de teste para a nova notícia criada pelo E2E.',
-        })
+        # Mock do geocoder para evitar timeout em testes
+        mock_location = MagicMock()
+        mock_location.latitude = -8.05
+        mock_location.longitude = -34.9
+        
+        with patch('Jornalista.models.Nominatim') as mock_nominatim:
+            mock_geolocator = MagicMock()
+            mock_geolocator.geocode.return_value = mock_location
+            mock_nominatim.return_value = mock_geolocator
+            
+            # Testar POST de criação de notícia
+            resp = self.client.post('/add/noticia', {
+                'titulo': 'Teste E2E - Nova Notícia',
+                'regiao': 'Recife',
+                'conteudo': 'Conteúdo de teste para a nova notícia criada pelo E2E.',
+            })
         
         # Redireciona para home após sucesso
         self.assertEqual(resp.status_code, 302)
@@ -333,12 +346,22 @@ class TesteE2E(LiveServerTestCase):
         # Testar via API/client ao invés de Selenium
         self.client.login(username=username, password=password)
         
-        resp = self.client.post('/add/noticia', {
-            'titulo': 'Teste Tags',
-            'regiao': 'Recife',
-            'conteudo': 'Conteúdo com tags para teste.',
-            'tags': [tag1.id, tag2.id],
-        })
+        # Mock do geocoder para evitar timeout em testes
+        mock_location = MagicMock()
+        mock_location.latitude = -8.05
+        mock_location.longitude = -34.9
+        
+        with patch('Jornalista.models.Nominatim') as mock_nominatim:
+            mock_geolocator = MagicMock()
+            mock_geolocator.geocode.return_value = mock_location
+            mock_nominatim.return_value = mock_geolocator
+            
+            resp = self.client.post('/add/noticia', {
+                'titulo': 'Teste Tags',
+                'regiao': 'Recife',
+                'conteudo': 'Conteúdo com tags para teste.',
+                'tags': [tag1.id, tag2.id],
+            })
         
         # Redireciona para home após sucesso
         self.assertEqual(resp.status_code, 302)
