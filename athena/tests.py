@@ -32,19 +32,18 @@ class TesteE2E(LiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        # run browser in headless mode to speed up CI/local runs
+        options.add_argument('--headless')
         options.add_argument('--disable-dev-shm-usage')        
         options.add_argument("--disable-infobars")
         options.add_argument("--incognito")
-        options.add_argument('--headless=new')
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument('--disable-extensions')
         options.add_argument('--window-size=1920,1080')
+        options.add_experimental_option('prefs', {'profile.managed_default_content_settings.images': 2})
 
         service = Service(ChromeDriverManager().install())
         cls.browser = webdriver.Chrome(service=service,options=options)
-        # keep a small implicit wait; explicit waits will handle synchronisation
         cls.browser.implicitly_wait(3)
 
     @classmethod
@@ -56,21 +55,23 @@ class TesteE2E(LiveServerTestCase):
         super().tearDownClass()
 
 
-    def login(self):
+    def login(self, username='teste', password='123', create_user=True):
         self.browser.delete_all_cookies()
 
+        if create_user:
+            user = User.objects.create_user(username=username, password=password)
+            perfil = Perfil.objects.create(user=user)
+            self.assertEqual(perfil.user.username, username)
+        else:
+            user = User.objects.get(username=username)
+
         self.browser.get(f'{self.live_server_url}/login/')
-
-        user = User.objects.create_user(username= 'teste', password='123')
-        perfil = Perfil.objects.create(user=user)
-
-        self.assertEqual(perfil.user.username,'teste')
 
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
 
-        usernameInput.send_keys('teste')
-        passwordInput.send_keys('123')
+        usernameInput.send_keys(username)
+        passwordInput.send_keys(password)
         passwordInput.send_keys(Keys.RETURN)
 
         WebDriverWait(self.browser, 10).until(
@@ -99,10 +100,8 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.presence_of_element_located((By.NAME,"username"))
         )
 
-        # Aguarda a página de login carregar completamente
         time.sleep(1)
         
-        # Re-encontra os elementos após a navegação
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
 
@@ -115,7 +114,6 @@ class TesteE2E(LiveServerTestCase):
                 (By.TAG_NAME, "body"), "Nome de usuario/email ou senha incorreto")
         )
 
-        # Re-encontra os elementos novamente
         time.sleep(0.5)
         usernameInput = self.browser.find_element(By.NAME,'username')
         passwordInput = self.browser.find_element(By.NAME,'password')
@@ -163,24 +161,20 @@ class TesteE2E(LiveServerTestCase):
 
         futebolButton.click()
         saveButton.click()
-        # wait for the save to complete on the server by polling the DB
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.NAME,'context'))
         )
-        # Give the server a moment to persist the change
         time.sleep(0.5)
-        # refresh perfil from db to check updated count
         user.perfil.refresh_from_db()
         self.assertEqual(user.perfil.tags.count(),1)
 
 
     def test_noticias_por_tag_slug_invalido(self):
+        self.browser.get(f'{self.live_server_url}/tag/tag-que-nao-existe/')
         
-        response = self.client.get(
-            reverse('noticias_por_tag', args=['tag-que-nao-existe'])
+        WebDriverWait(self.browser, 10).until(
+            lambda driver: "404" in driver.page_source or "Not Found" in driver.page_source or "Não encontrado" in driver.page_source
         )
-
-        self.assertEqual(response.status_code, 404)
 
 
     def test_noticias_por_tag_filtra_corretamente(self):
@@ -199,30 +193,31 @@ class TesteE2E(LiveServerTestCase):
         self.noticia_b.tags.add(self.tag_politica, self.tag_economia)
         self.noticia_c.tags.add(self.tag_economia)
 
-        self.browser.get(f'{self.live_server_url}/')
-
-        # Testar a filtragem via API/client ao invés de Selenium UI
-        # pois o layout em headless mode não renderiza os botões corretamente
-        response_politica = self.client.get(
-            reverse('noticias_por_tag', args=[self.tag_politica.slug])
+        self.browser.get(f'{self.live_server_url}/tag/{self.tag_politica.slug}/')
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.TAG_NAME, 'body'))
         )
-
-        self.assertEqual(response_politica.status_code, 200)
+        time.sleep(1)
         
-        self.assertIn(self.noticia_a, response_politica.context['noticias'])
-        self.assertIn(self.noticia_b, response_politica.context['noticias'])
+        page_source = self.browser.page_source
         
-        self.assertNotIn(self.noticia_c, response_politica.context['noticias'])
+        self.assertIn('Título A', page_source)
+        self.assertIn('Título B', page_source)
+        self.assertNotIn('Título C', page_source)
         
-        # Testar economia também
-        response_economia = self.client.get(
-            reverse('noticias_por_tag', args=[self.tag_economia.slug])
+        self.browser.get(f'{self.live_server_url}/tag/{self.tag_economia.slug}/')
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.TAG_NAME, 'body'))
         )
+        time.sleep(1)
         
-        self.assertEqual(response_economia.status_code, 200)
-        self.assertIn(self.noticia_b, response_economia.context['noticias'])
-        self.assertIn(self.noticia_c, response_economia.context['noticias'])
-        self.assertNotIn(self.noticia_a, response_economia.context['noticias'])
+        page_source = self.browser.page_source
+        
+        self.assertIn('Título B', page_source)
+        self.assertIn('Título C', page_source)
+        self.assertNotIn('Título A', page_source)
 
     def test_pesquisa_noticia(self):
 
@@ -232,17 +227,12 @@ class TesteE2E(LiveServerTestCase):
         self.noticia_a = Noticia.objects.create(autor=jornalista,titulo='Título A', conteudo='Conteúdo A')
 
         self.browser.get(f'{self.live_server_url}/')
-        
-        # Aguardar o carregamento completo da página com CSS/JS
-        time.sleep(1.5)
 
-        # Abrir sidebar para acessar barra de pesquisa
         hamburger_btn = WebDriverWait(self.browser, 10).until(
             expected_conditions.element_to_be_clickable((By.CLASS_NAME, "hamburger-btn"))
         )
         hamburger_btn.click()
         
-        # Esperar sidebar abrir completamente
         time.sleep(0.5)
         WebDriverWait(self.browser, 10).until(
             expected_conditions.visibility_of_element_located((By.CLASS_NAME, "sidebar-search"))
@@ -251,7 +241,6 @@ class TesteE2E(LiveServerTestCase):
         search = self.browser.find_element(By.NAME,"BarraDePesquisa")
         search.send_keys("Título A")
         
-        # Encontrar e clicar no botão de busca dentro da sidebar
         searchButton = self.browser.find_element(By.CLASS_NAME,"sidebar-search-btn")
         searchButton.click()
 
@@ -259,17 +248,12 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.url_contains('/pesquisa/')
         )
 
-        # Verificar que a notícia aparece nos resultados
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Título A')]"))
         )
 
         self.browser.get(f'{self.live_server_url}/')
-        
-        # Aguardar o carregamento completo da página
-        time.sleep(1.5)
 
-        # Abrir sidebar novamente para segunda busca
         hamburger_btn = WebDriverWait(self.browser, 10).until(
             expected_conditions.element_to_be_clickable((By.CLASS_NAME, "hamburger-btn"))
         )
@@ -289,7 +273,6 @@ class TesteE2E(LiveServerTestCase):
             expected_conditions.url_contains('/pesquisa/')
         )
 
-        # Verificar mensagem de nenhum resultado
         WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Não há notícias relacionadas')]"))
         )
@@ -301,32 +284,28 @@ class TesteE2E(LiveServerTestCase):
         perfil = Perfil.objects.create(user=user)
         jornalista = perfilJornalista.objects.create(user=user)
 
-        # Testar via API/client ao invés de Selenium
-        # pois o link em headless mode não é visível
-        self.client.login(username=username, password=password)
+        self.login(username=username, password=password, create_user=False)
         
-        resp = self.client.get('/add/noticia')
-        self.assertEqual(resp.status_code, 200)
+        self.browser.get(f'{self.live_server_url}/add/noticia')
         
-        # Mock do geocoder para evitar timeout em testes
-        mock_location = MagicMock()
-        mock_location.latitude = -8.05
-        mock_location.longitude = -34.9
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
+        )
         
-        with patch('Jornalista.models.Nominatim') as mock_nominatim:
-            mock_geolocator = MagicMock()
-            mock_geolocator.geocode.return_value = mock_location
-            mock_nominatim.return_value = mock_geolocator
-            
-            # Testar POST de criação de notícia
-            resp = self.client.post('/add/noticia', {
-                'titulo': 'Teste E2E - Nova Notícia',
-                'regiao': 'Recife',
-                'conteudo': 'Conteúdo de teste para a nova notícia criada pelo E2E.',
-            })
+        titulo_input = self.browser.find_element(By.NAME, 'titulo')
+        regiao_input = self.browser.find_element(By.NAME, 'regiao')
+        conteudo_input = self.browser.find_element(By.NAME, 'conteudo')
         
-        # Redireciona para home após sucesso
-        self.assertEqual(resp.status_code, 302)
+        titulo_input.send_keys('Teste E2E - Nova Notícia')
+        regiao_input.send_keys('Recife')
+        conteudo_input.send_keys('Conteúdo de teste para a nova notícia criada pelo E2E.')
+        
+        submit_button = self.browser.find_element(By.XPATH, "//button[@type='submit']")
+        submit_button.click()
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.url_matches(f'{self.live_server_url}/$')
+        )
         
         from Jornalista.models import Noticia
         self.assertTrue(Noticia.objects.filter(titulo='Teste E2E - Nova Notícia').exists())
@@ -343,28 +322,32 @@ class TesteE2E(LiveServerTestCase):
         tag1 = Tag.objects.create(nome='Política')
         tag2 = Tag.objects.create(nome='Economia')
 
-        # Testar via API/client ao invés de Selenium
-        self.client.login(username=username, password=password)
+        self.login(username=username, password=password, create_user=False)
         
-        # Mock do geocoder para evitar timeout em testes
-        mock_location = MagicMock()
-        mock_location.latitude = -8.05
-        mock_location.longitude = -34.9
+        self.browser.get(f'{self.live_server_url}/add/noticia')
         
-        with patch('Jornalista.models.Nominatim') as mock_nominatim:
-            mock_geolocator = MagicMock()
-            mock_geolocator.geocode.return_value = mock_location
-            mock_nominatim.return_value = mock_geolocator
-            
-            resp = self.client.post('/add/noticia', {
-                'titulo': 'Teste Tags',
-                'regiao': 'Recife',
-                'conteudo': 'Conteúdo com tags para teste.',
-                'tags': [tag1.id, tag2.id],
-            })
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.NAME, 'titulo'))
+        )
         
-        # Redireciona para home após sucesso
-        self.assertEqual(resp.status_code, 302)
+        titulo_input = self.browser.find_element(By.NAME, 'titulo')
+        regiao_input = self.browser.find_element(By.NAME, 'regiao')
+        conteudo_input = self.browser.find_element(By.NAME, 'conteudo')
+        
+        titulo_input.send_keys('Teste Tags')
+        regiao_input.send_keys('Recife')
+        conteudo_input.send_keys('Conteúdo com tags para teste.')
+        
+        tags_select = Select(self.browser.find_element(By.NAME, 'tags'))
+        tags_select.select_by_visible_text('Política')
+        tags_select.select_by_visible_text('Economia')
+        
+        submit_button = self.browser.find_element(By.XPATH, "//button[@type='submit']")
+        submit_button.click()
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.url_matches(f'{self.live_server_url}/$')
+        )
         
         from Jornalista.models import Noticia
         noticia = Noticia.objects.filter(titulo='Teste Tags').first()
@@ -379,10 +362,8 @@ class TesteE2E(LiveServerTestCase):
 
         lp = LivePodcast.objects.create(title='Ao Vivo - Teste', stream_url='https://example.com/stream.mp3', is_live=True)
 
-        # visit home
         self.browser.get(f'{self.live_server_url}/')
 
-        # wait for mini-player and check title and live badge
         mini = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, 'miniPodcast'))
         )
@@ -401,17 +382,21 @@ class TesteE2E(LiveServerTestCase):
         user = User.objects.create_user(username='user_fav', password='pwd')
         perfil = perfilUsuario.objects.create(user=user)
 
-        logged = self.client.login(username='user_fav', password='pwd')
-        self.assertTrue(logged)
-
-        resp = self.client.post(f'/favorite/notices/{noticia.id}/')
-        self.assertEqual(resp.status_code, 200)
-
+        self.login(username='user_fav', password='pwd', create_user=False)
+        
+        self.browser.get(f'{self.live_server_url}/noticia/{noticia.id}/')
+        
+        favorite_btn = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'favorite-btn'))
+        )
+        
+        favorite_btn.click()
+        
+        time.sleep(1)
+        
         perfil.refresh_from_db()
         self.assertTrue(perfil.relevantes.filter(id=noticia.id).exists())
-
-        resp2 = self.client.post(f'/favorite/notices/{noticia.id}/')
-        self.assertEqual(resp2.status_code, 200)
+        
         perfil.refresh_from_db()
         self.assertFalse(perfil.relevantes.filter(id=noticia.id).exists())
 
@@ -420,10 +405,19 @@ class TesteE2E(LiveServerTestCase):
         jornalista = perfilJornalista.objects.create(user=jornalista_user)
         noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia Sem Login', conteudo='Conteudo')
 
+        self.browser.delete_all_cookies()
+        self.browser.get(f'{self.live_server_url}/noticia/{noticia.id}/')
+        
+        favorite_btn = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'favorite-btn'))
+        )
+        
+        favorite_btn.click()
+        time.sleep(1)
+        
         resp = self.client.post(f'/favorite/notices/{noticia.id}/')
         self.assertEqual(resp.status_code, 401)
 
-    # ===== TESTES HISTÓRIA 6: Marcar se notícia foi relevante ou não =====
     def test_feedback_noticia_usuario_com_login(self):
 
         jornalista_user = User.objects.create_user(username='journ_h6_1', password='pass')
@@ -433,20 +427,25 @@ class TesteE2E(LiveServerTestCase):
         user = User.objects.create_user(username='user_h6_1', password='pwd')
         perfil = perfilUsuario.objects.create(user=user)
 
-        # Usuário lê a notícia e submete feedback positivo (nota alta = relevante)
-        self.client.login(username='user_h6_1', password='pwd')
-
-        resp = self.client.post(
-            f'/feedback/noticia/{noticia.id}/',
-            {'avaliacao': 9, 'comentario': 'Notícia muito relevante e bem escrita'},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-
-        self.assertEqual(resp.status_code, 200)
-        data = resp.json()
-        self.assertTrue(data['success'])
+        self.login(username='user_h6_1', password='pwd', create_user=False)
         
-        # Verificar que o feedback foi registrado
+        self.browser.get(f'{self.live_server_url}/noticia/{noticia.id}/')
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, 'formFeedbackNoticia'))
+        )
+        
+        rating_9 = self.browser.find_element(By.XPATH, "//input[@name='avaliacao'][@value='9']")
+        rating_9.click()
+        
+        comentario_input = self.browser.find_element(By.ID, 'id_comentario')
+        comentario_input.send_keys('Notícia muito relevante e bem escrita')
+        
+        submit_btn = self.browser.find_element(By.CLASS_NAME, 'btn-enviar-feedback')
+        submit_btn.click()
+        
+        time.sleep(1)
+        
         self.assertEqual(Feedback.objects.filter(noticia=noticia, tipo='noticia').count(), 1)
         feedback = Feedback.objects.get(noticia=noticia, tipo='noticia')
         self.assertEqual(feedback.avaliacao, 9)
@@ -458,20 +457,27 @@ class TesteE2E(LiveServerTestCase):
         jornalista = perfilJornalista.objects.create(user=jornalista_user)
         noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia H6 Sem Login', conteudo='Conteudo')
 
-        # Usuário NÃO está logado, tenta enviar feedback
-        resp = self.client.post(
-            f'/feedback/noticia/{noticia.id}/',
-            {'avaliacao': 5, 'comentario': 'Feedback sem login'},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        self.browser.delete_all_cookies()
+        self.browser.get(f'{self.live_server_url}/noticia/{noticia.id}/')
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, 'formFeedbackNoticia'))
         )
-
-        # Espera que o feedback não seja registrado ou retorne erro
-        # (pode ser 401 unauthorized ou o feedback ser anônimo conforme implementação)
+        
+        rating_5 = self.browser.find_element(By.XPATH, "//input[@name='avaliacao'][@value='5']")
+        rating_5.click()
+        
+        comentario_input = self.browser.find_element(By.ID, 'id_comentario')
+        comentario_input.send_keys('Feedback sem login')
+        
+        submit_btn = self.browser.find_element(By.CLASS_NAME, 'btn-enviar-feedback')
+        submit_btn.click()
+        
+        time.sleep(1)
+        
         feedback_count = Feedback.objects.filter(noticia=noticia).count()
-        # Se implementado com restrição de login, usuario será None
         if feedback_count > 0:
             fb = Feedback.objects.get(noticia=noticia)
-            # Feedback anônimo é permitido conforme a implementação
             self.assertIsNone(fb.usuario)
 
     def test_feedback_noticia_avaliacoes_multiplas(self):
@@ -480,29 +486,34 @@ class TesteE2E(LiveServerTestCase):
         jornalista = perfilJornalista.objects.create(user=jornalista_user)
         noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia Multi Feedback', conteudo='Conteudo')
 
-        # 3 usuários diferentes dão feedback
-        users = []
         avaliacoes = [8, 6, 9]
         
         for i in range(3):
             user = User.objects.create_user(username=f'user_multi_fb_{i}', password='pwd')
             perfil = perfilUsuario.objects.create(user=user)
-            users.append(user)
 
-            self.client.login(username=f'user_multi_fb_{i}', password='pwd')
-            resp = self.client.post(
-                f'/feedback/noticia/{noticia.id}/',
-                {'avaliacao': avaliacoes[i], 'comentario': f'Feedback {i+1}'},
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            self.login(username=f'user_multi_fb_{i}', password='pwd', create_user=False)
+            
+            self.browser.get(f'{self.live_server_url}/noticia/{noticia.id}/')
+            
+            WebDriverWait(self.browser, 10).until(
+                expected_conditions.presence_of_element_located((By.ID, 'formFeedbackNoticia'))
             )
-            self.assertEqual(resp.status_code, 200)
-            self.client.logout()
+            
+            rating = self.browser.find_element(By.XPATH, f"//input[@name='avaliacao'][@value='{avaliacoes[i]}']")
+            rating.click()
+            
+            comentario_input = self.browser.find_element(By.ID, 'id_comentario')
+            comentario_input.send_keys(f'Feedback {i+1}')
+            
+            submit_btn = self.browser.find_element(By.CLASS_NAME, 'btn-enviar-feedback')
+            submit_btn.click()
+            
+            time.sleep(1)
 
-        # Verificar que todos os 3 feedbacks foram registrados
         feedbacks = Feedback.objects.filter(noticia=noticia, tipo='noticia')
         self.assertEqual(feedbacks.count(), 3)
         
-        # Verificar que as avaliações estão corretas
         notas = sorted([fb.avaliacao for fb in feedbacks])
         self.assertEqual(notas, [6, 8, 9])
 
@@ -510,9 +521,9 @@ class TesteE2E(LiveServerTestCase):
 
         jornalista_user = User.objects.create_user(username='journ_view_fb_h6', password='pass')
         jornalista = perfilJornalista.objects.create(user=jornalista_user)
+        perfilJornalista_perfil = perfilJornalista.objects.get(user=jornalista_user)
         noticia = Noticia.objects.create(autor=jornalista, titulo='Noticia Ver Feedback', conteudo='Conteudo')
 
-        # Criar 3 feedbacks: 5, 7, 10 = média 7.33
         user1 = User.objects.create_user(username='user_fb_1', password='pwd')
         perfilUsuario.objects.create(user=user1)
         Feedback.objects.create(tipo='noticia', noticia=noticia, avaliacao=5, comentario='Ruim', usuario=user1)
@@ -525,22 +536,23 @@ class TesteE2E(LiveServerTestCase):
         perfilUsuario.objects.create(user=user3)
         Feedback.objects.create(tipo='noticia', noticia=noticia, avaliacao=10, comentario='Excelente', usuario=user3)
 
-        # Autor consegue acessar a página de feedbacks
-        self.client.login(username='journ_view_fb_h6', password='pass')
-        resp = self.client.get(f'/feedbacks/noticia/{noticia.id}/')
-
-        self.assertEqual(resp.status_code, 200)
-        content = resp.content.decode()
-        # Verifica que aparecem as notas dos feedbacks
-        self.assertIn('5/10', content)
-        self.assertIn('7/10', content)
-        self.assertIn('10/10', content)
-        # Verifica que aparecem os comentários
-        self.assertIn('Ruim', content)
-        self.assertIn('Médio', content)
-        self.assertIn('Excelente', content)
-        # Verifica a média (7.3 arredondado)
-        self.assertIn('(3 feedbacks)', content)
+        self.login(username='journ_view_fb_h6', password='pass', create_user=False)
+        
+        self.browser.get(f'{self.live_server_url}/feedbacks/noticia/{noticia.id}/')
+        
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'titulo-noticia'))
+        )
+        
+        page_source = self.browser.page_source
+        
+        self.assertIn('5/10', page_source)
+        self.assertIn('7/10', page_source)
+        self.assertIn('10/10', page_source)
+        self.assertIn('Ruim', page_source)
+        self.assertIn('Médio', page_source)
+        self.assertIn('Excelente', page_source)
+        self.assertIn('3 feedbacks', page_source)
 
     def test_feedback_noticia_nao_autenticado_nao_acessa_feedbacks(self):
 
@@ -550,11 +562,12 @@ class TesteE2E(LiveServerTestCase):
 
         Feedback.objects.create(tipo='noticia', noticia=noticia, avaliacao=8, comentario='Bom')
 
-        # Usuário não logado tenta acessar feedbacks
-        resp = self.client.get(f'/feedbacks/noticia/{noticia.id}/')
+        self.browser.delete_all_cookies()
+        self.browser.get(f'{self.live_server_url}/feedbacks/noticia/{noticia.id}/')
         
-        # Deve redirecionar para login (302)
-        self.assertEqual(resp.status_code, 302)
-
-# Create your tests here.
+        WebDriverWait(self.browser, 10).until(
+            expected_conditions.url_contains('/login')
+        )
+        
+        self.assertIn('/login', self.browser.current_url)
 
