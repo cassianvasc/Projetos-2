@@ -30,3 +30,6 @@ As principais tecnologias utilizadas no desenvolvimento do projeto são:
 
 ## Testes Automatizados:
 https://youtu.be/mvB21_SKF_w
+
+## Deploy:
+https://youtu.be/BWUOTspWlZs
