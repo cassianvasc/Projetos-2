@@ -18,6 +18,9 @@ from .models import *
 from math import radians, cos, sin, asin, sqrt
 import json
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 FEATURED_NEWS_ID = None # None = usa a notícia mais recente; coloque o ID desejado aqui;
 
@@ -352,6 +355,8 @@ def need_login(request):
 @require_POST
 def submit_feedback_noticia(request, noticia_id):
     """Submeter feedback para uma notícia"""
+    logger.info(f"Recebendo feedback para notícia {noticia_id}")
+    
     noticia = get_object_or_404(Noticia, id=noticia_id)
     
     form = FeedbackForm(request.POST)
@@ -361,11 +366,13 @@ def submit_feedback_noticia(request, noticia_id):
         feedback.noticia = noticia
         feedback.usuario = request.user if request.user.is_authenticated else None
         feedback.save()
+        logger.info(f"Feedback para notícia {noticia_id} salvo com sucesso")
         return JsonResponse({
             'success': True,
             'message': 'Feedback enviado com sucesso! Obrigado pela sua avaliação.'
         })
     else:
+        logger.error(f"Erro no form de feedback: {form.errors}")
         return JsonResponse({
             'success': False,
             'errors': form.errors
@@ -375,17 +382,21 @@ def submit_feedback_noticia(request, noticia_id):
 @require_POST
 def submit_feedback_site(request):
     """Submeter feedback geral do site"""
+    logger.info("Recebendo feedback do site")
+    
     form = FeedbackSiteForm(request.POST)
     if form.is_valid():
         feedback = form.save(commit=False)
         feedback.tipo = 'site'
         feedback.usuario = request.user if request.user.is_authenticated else None
         feedback.save()
+        logger.info("Feedback do site salvo com sucesso")
         return JsonResponse({
             'success': True,
             'message': 'Obrigado pelo seu feedback! Ele nos ajuda a melhorar o site.'
         })
     else:
+        logger.error(f"Erro no form de feedback do site: {form.errors}")
         return JsonResponse({
             'success': False,
             'errors': form.errors

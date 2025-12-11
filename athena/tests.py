@@ -439,7 +439,7 @@ class TesteE2E(LiveServerTestCase):
         )
         
         rating_9 = self.browser.find_element(By.XPATH, "//input[@name='avaliacao'][@value='9']")
-        rating_9.click()
+        self.browser.execute_script("arguments[0].click();", rating_9)
         
         comentario_input = self.browser.find_element(By.ID, 'id_comentario')
         comentario_input.send_keys('Notícia muito relevante e bem escrita')
@@ -468,7 +468,7 @@ class TesteE2E(LiveServerTestCase):
         )
         
         rating_5 = self.browser.find_element(By.XPATH, "//input[@name='avaliacao'][@value='5']")
-        rating_5.click()
+        self.browser.execute_script("arguments[0].click();", rating_5)
         
         comentario_input = self.browser.find_element(By.ID, 'id_comentario')
         comentario_input.send_keys('Feedback sem login')
@@ -504,7 +504,7 @@ class TesteE2E(LiveServerTestCase):
             )
             
             rating = self.browser.find_element(By.XPATH, f"//input[@name='avaliacao'][@value='{avaliacoes[i]}']")
-            rating.click()
+            self.browser.execute_script("arguments[0].click();", rating)
             
             comentario_input = self.browser.find_element(By.ID, 'id_comentario')
             comentario_input.send_keys(f'Feedback {i+1}')

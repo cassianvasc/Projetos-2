@@ -1,0 +1,233 @@
+INFO 2025-12-11 02:04:16,096 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-11 02:04:21,248 log Method Not Allowed (GET): /feedback/site/
+INFO 2025-12-11 02:04:21,249 basehttp - Broken pipe from ('127.0.0.1', 57771)
+WARNING 2025-12-11 02:04:21,301 log Not Found: /favicon.ico
+WARNING 2025-12-11 02:04:21,302 basehttp "GET /favicon.ico HTTP/1.1" 404 179
+INFO 2025-12-11 02:04:24,038 basehttp "GET / HTTP/1.1" 200 20389
+INFO 2025-12-11 02:04:24,080 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:04:24,080 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:04:24,105 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,105 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:04:24,110 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,111 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,118 basehttp "GET /media/noticias/be0633b9948cf27b1b474a52d16acfdfdda422e2.png HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,119 basehttp "GET /static/jcpe-logo.svg HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,119 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2684
+INFO 2025-12-11 02:04:24,122 basehttp "GET /media/noticias/6329d4178025f4dd4ba6cf69f09a1683969cd44f.png HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,123 basehttp "GET /media/noticias/42158b3670712fe8befc0b03688288b6dd83f011.png HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,126 basehttp "GET /media/podcast_thumbnails/RadioJornaldoComercio.jpg HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,128 basehttp "GET /media/noticias/96f19f84480b62546f26ed280dd2ef0071a56621.png HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:24,298 basehttp "GET /media/noticias/71988579da0572191719dab12e520b0669cdb95b.png HTTP/1.1" 200 1308489
+INFO 2025-12-11 02:04:26,052 basehttp "GET / HTTP/1.1" 200 20383
+INFO 2025-12-11 02:04:26,232 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:04:26,236 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:04:26,238 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 200 1512
+INFO 2025-12-11 02:04:26,238 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 200 0
+INFO 2025-12-11 02:04:26,238 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:04:26,239 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2684
+INFO 2025-12-11 02:04:26,437 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 200 11121
+INFO 2025-12-11 02:04:26,440 basehttp "GET /media/podcast_thumbnails/RadioJornaldoComercio.jpg HTTP/1.1" 200 23695
+INFO 2025-12-11 02:04:26,446 basehttp "GET /static/jcpe-logo.svg HTTP/1.1" 200 119637
+INFO 2025-12-11 02:04:26,453 basehttp "GET /media/noticias/f74a289668c52d4cc6498f92e11856e93a332dda.png HTTP/1.1" 200 341084
+INFO 2025-12-11 02:04:26,460 basehttp "GET /media/noticias/42158b3670712fe8befc0b03688288b6dd83f011.png HTTP/1.1" 200 580767
+INFO 2025-12-11 02:04:26,461 basehttp "GET /media/noticias/6329d4178025f4dd4ba6cf69f09a1683969cd44f.png HTTP/1.1" 200 611344
+INFO 2025-12-11 02:04:26,470 basehttp "GET /media/noticias/96f19f84480b62546f26ed280dd2ef0071a56621.png HTTP/1.1" 200 1182057
+INFO 2025-12-11 02:04:26,471 basehttp "GET /media/noticias/71988579da0572191719dab12e520b0669cdb95b.png HTTP/1.1" 200 1308489
+INFO 2025-12-11 02:04:26,891 basehttp "GET /static/Athenas.svg HTTP/1.1" 200 16040
+INFO 2025-12-11 02:04:32,312 basehttp "POST /set-location/ HTTP/1.1" 200 16
+INFO 2025-12-11 02:04:32,414 views Recebendo feedback do site
+INFO 2025-12-11 02:04:32,430 views Feedback do site salvo com sucesso
+INFO 2025-12-11 02:04:32,432 basehttp "POST /feedback/site/ HTTP/1.1" 200 92
+INFO 2025-12-11 02:04:35,189 basehttp "GET /noticia/11/ HTTP/1.1" 200 12742
+INFO 2025-12-11 02:04:35,237 basehttp "GET /static/css/noticia.css HTTP/1.1" 200 10242
+INFO 2025-12-11 02:04:42,475 views Recebendo feedback para notícia 11
+INFO 2025-12-11 02:04:42,506 views Feedback para notícia 11 salvo com sucesso
+INFO 2025-12-11 02:04:42,508 basehttp "POST /feedback/noticia/11/ HTTP/1.1" 200 100
+INFO 2025-12-11 02:04:44,513 basehttp "GET / HTTP/1.1" 200 20454
+INFO 2025-12-11 02:04:44,597 basehttp "GET /media/noticias/b164f0327bcef55600b046876045fbb748384dfb.png HTTP/1.1" 304 0
+INFO 2025-12-11 02:04:44,602 basehttp "GET /media/noticias/ca2ff329164e2e53bed3ca6a3ddb2d8a561219d1.png HTTP/1.1" 200 180690
+INFO 2025-12-11 02:04:44,991 basehttp "POST /set-location/ HTTP/1.1" 200 16
+INFO 2025-12-11 02:04:48,111 autoreload C:\Users\vitor\Documents\Cesar\web\Projetos-2\project\settings.py changed, reloading.
+INFO 2025-12-11 02:04:49,683 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-11 02:05:43,492 log Forbidden (CSRF token from the 'X-Csrftoken' HTTP header has incorrect length.): /favorite/notices/3/
+WARNING 2025-12-11 02:05:44,944 log Forbidden (CSRF token from the 'X-Csrftoken' HTTP header has incorrect length.): /favorite/notices/4/
+WARNING 2025-12-11 02:05:45,946 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:06:05,772 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:06:05,792 log Not Found: /favicon.ico
+INFO 2025-12-11 02:06:10,468 basehttp - Broken pipe from ('127.0.0.1', 49249)
+INFO 2025-12-11 02:06:10,468 basehttp - Broken pipe from ('127.0.0.1', 52601)
+INFO 2025-12-11 02:06:10,471 basehttp - Broken pipe from ('127.0.0.1', 60930)
+INFO 2025-12-11 02:06:10,948 autoreload Watching for file changes with StatReloader
+INFO 2025-12-11 02:06:25,093 basehttp "GET / HTTP/1.1" 200 20358
+INFO 2025-12-11 02:06:25,140 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:06:25,141 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:06:25,144 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:06:25,147 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2684
+INFO 2025-12-11 02:06:25,149 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 200 1512
+INFO 2025-12-11 02:06:25,151 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 200 0
+INFO 2025-12-11 02:06:25,909 basehttp "GET /media/noticias/ca2ff329164e2e53bed3ca6a3ddb2d8a561219d1.png HTTP/1.1" 200 180690
+INFO 2025-12-11 02:06:25,997 basehttp "GET /media/noticias/dcbcc6a5cad45cb39c3ded30fcf21ee491469d04.png HTTP/1.1" 200 140877
+INFO 2025-12-11 02:06:26,020 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 200 11121
+INFO 2025-12-11 02:06:26,020 basehttp "GET /media/noticias/baee7773058b965c8af12c12103feaa071a711ce.png HTTP/1.1" 200 268492
+INFO 2025-12-11 02:06:26,047 basehttp "GET /static/jcpe-logo.svg HTTP/1.1" 200 119637
+INFO 2025-12-11 02:06:26,063 basehttp "GET /media/noticias/96f19f84480b62546f26ed280dd2ef0071a56621.png HTTP/1.1" 200 1182057
+INFO 2025-12-11 02:06:26,131 basehttp "GET /media/noticias/42158b3670712fe8befc0b03688288b6dd83f011.png HTTP/1.1" 200 580767
+INFO 2025-12-11 02:06:26,182 basehttp "GET /media/podcast_thumbnails/RadioJornaldoComercio.jpg HTTP/1.1" 200 23695
+INFO 2025-12-11 02:06:26,188 basehttp "GET /media/noticias/b164f0327bcef55600b046876045fbb748384dfb.png HTTP/1.1" 200 260471
+INFO 2025-12-11 02:06:26,305 basehttp "GET /static/Athenas.svg HTTP/1.1" 200 16040
+INFO 2025-12-11 02:06:29,763 basehttp "POST /set-location/ HTTP/1.1" 200 16
+INFO 2025-12-11 02:06:30,499 views Recebendo feedback do site
+INFO 2025-12-11 02:06:30,514 views Feedback do site salvo com sucesso
+INFO 2025-12-11 02:06:30,518 basehttp "POST /feedback/site/ HTTP/1.1" 200 92
+WARNING 2025-12-11 02:06:39,664 log Forbidden (CSRF token from the 'X-Csrftoken' HTTP header has incorrect length.): /favorite/notices/3/
+WARNING 2025-12-11 02:06:41,124 log Forbidden (CSRF token from the 'X-Csrftoken' HTTP header has incorrect length.): /favorite/notices/4/
+WARNING 2025-12-11 02:06:42,125 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:07:01,967 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:07:01,985 log Not Found: /favicon.ico
+INFO 2025-12-11 02:07:06,439 basehttp - Broken pipe from ('127.0.0.1', 55596)
+INFO 2025-12-11 02:07:06,439 basehttp - Broken pipe from ('127.0.0.1', 52151)
+INFO 2025-12-11 02:07:06,440 basehttp - Broken pipe from ('127.0.0.1', 53552)
+INFO 2025-12-11 02:07:25,183 autoreload C:\Users\vitor\Documents\Cesar\web\Projetos-2\project\settings.py changed, reloading.
+INFO 2025-12-11 02:07:26,422 autoreload Watching for file changes with StatReloader
+INFO 2025-12-11 02:08:41,625 autoreload C:\Users\vitor\Documents\Cesar\web\Projetos-2\project\settings.py changed, reloading.
+INFO 2025-12-11 02:08:43,010 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-11 02:09:22,652 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:09:23,654 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:09:44,302 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:09:44,320 log Not Found: /favicon.ico
+INFO 2025-12-11 02:09:48,811 basehttp - Broken pipe from ('127.0.0.1', 61429)
+INFO 2025-12-11 02:09:48,811 basehttp - Broken pipe from ('127.0.0.1', 55424)
+INFO 2025-12-11 02:09:48,812 basehttp - Broken pipe from ('127.0.0.1', 55490)
+WARNING 2025-12-11 02:10:54,797 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:10:55,801 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:11:16,236 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:11:16,264 log Not Found: /favicon.ico
+INFO 2025-12-11 02:11:20,132 basehttp - Broken pipe from ('127.0.0.1', 58250)
+INFO 2025-12-11 02:11:20,136 basehttp - Broken pipe from ('127.0.0.1', 60514)
+INFO 2025-12-11 02:11:20,137 basehttp - Broken pipe from ('127.0.0.1', 49765)
+WARNING 2025-12-11 02:12:21,358 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:12:22,361 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:12:43,216 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:12:43,237 log Not Found: /favicon.ico
+INFO 2025-12-11 02:12:47,625 basehttp - Broken pipe from ('127.0.0.1', 53581)
+INFO 2025-12-11 02:12:47,626 basehttp - Broken pipe from ('127.0.0.1', 62689)
+INFO 2025-12-11 02:12:47,626 basehttp - Broken pipe from ('127.0.0.1', 64934)
+WARNING 2025-12-11 02:13:27,610 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:13:28,613 log Unauthorized: /favorite/notices/4/
+INFO 2025-12-11 02:13:32,153 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:13:32,155 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:13:34,175 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:13:34,177 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:13:36,207 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:13:36,209 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:13:39,233 views Recebendo feedback para notícia 8
+INFO 2025-12-11 02:13:39,235 views Feedback para notícia 8 salvo com sucesso
+INFO 2025-12-11 02:13:40,787 views Recebendo feedback para notícia 9
+INFO 2025-12-11 02:13:40,789 views Feedback para notícia 9 salvo com sucesso
+WARNING 2025-12-11 02:13:47,217 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:13:47,263 log Not Found: /favicon.ico
+INFO 2025-12-11 02:13:51,682 basehttp - Broken pipe from ('127.0.0.1', 49622)
+INFO 2025-12-11 02:13:51,683 basehttp - Broken pipe from ('127.0.0.1', 56449)
+INFO 2025-12-11 02:13:51,686 basehttp - Broken pipe from ('127.0.0.1', 56499)
+INFO 2025-12-11 02:14:30,683 autoreload C:\Users\vitor\Documents\Cesar\web\Projetos-2\project\settings.py changed, reloading.
+INFO 2025-12-11 02:14:32,014 autoreload Watching for file changes with StatReloader
+INFO 2025-12-11 02:14:56,724 autoreload C:\Users\vitor\Documents\Cesar\web\Projetos-2\project\settings.py changed, reloading.
+INFO 2025-12-11 02:14:58,062 autoreload Watching for file changes with StatReloader
+WARNING 2025-12-11 02:15:24,519 log Unauthorized: /favorite/notices/4/
+WARNING 2025-12-11 02:15:25,521 log Unauthorized: /favorite/notices/4/
+INFO 2025-12-11 02:15:29,602 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:15:29,605 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:15:31,667 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:15:31,669 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:15:33,820 views Recebendo feedback para notícia 6
+INFO 2025-12-11 02:15:33,825 views Feedback para notícia 6 salvo com sucesso
+INFO 2025-12-11 02:15:36,732 views Recebendo feedback para notícia 8
+INFO 2025-12-11 02:15:36,736 views Feedback para notícia 8 salvo com sucesso
+INFO 2025-12-11 02:15:38,235 views Recebendo feedback para notícia 9
+INFO 2025-12-11 02:15:38,237 views Feedback para notícia 9 salvo com sucesso
+WARNING 2025-12-11 02:15:45,172 log Not Found: /tag/tag-que-nao-existe/
+WARNING 2025-12-11 02:15:45,192 log Not Found: /favicon.ico
+INFO 2025-12-11 02:15:49,310 basehttp - Broken pipe from ('127.0.0.1', 53442)
+INFO 2025-12-11 02:15:49,313 basehttp - Broken pipe from ('127.0.0.1', 56509)
+INFO 2025-12-11 02:15:49,315 basehttp - Broken pipe from ('127.0.0.1', 64912)
+INFO 2025-12-11 02:17:17,908 autoreload Watching for file changes with StatReloader
+INFO 2025-12-11 02:17:21,610 basehttp "GET / HTTP/1.1" 200 20361
+INFO 2025-12-11 02:17:21,642 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:17:21,645 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:17:21,646 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:17:21,648 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 200 0
+INFO 2025-12-11 02:17:21,651 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 200 1512
+INFO 2025-12-11 02:17:21,652 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2795
+INFO 2025-12-11 02:17:21,877 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 200 11121
+INFO 2025-12-11 02:17:22,367 basehttp "GET /media/noticias/4c415401d846f913ad1f8f8bbb557b12b5e4dce9.png HTTP/1.1" 200 1004168
+INFO 2025-12-11 02:17:22,368 basehttp "GET /media/noticias/ca2ff329164e2e53bed3ca6a3ddb2d8a561219d1.png HTTP/1.1" 200 180690
+INFO 2025-12-11 02:17:22,380 basehttp "GET /static/jcpe-logo.svg HTTP/1.1" 200 119637
+INFO 2025-12-11 02:17:22,388 basehttp "GET /media/noticias/96f19f84480b62546f26ed280dd2ef0071a56621.png HTTP/1.1" 200 1182057
+INFO 2025-12-11 02:17:22,408 basehttp "GET /media/noticias/dcbcc6a5cad45cb39c3ded30fcf21ee491469d04.png HTTP/1.1" 200 140877
+INFO 2025-12-11 02:17:22,447 basehttp "GET /media/noticias/6329d4178025f4dd4ba6cf69f09a1683969cd44f.png HTTP/1.1" 200 611344
+INFO 2025-12-11 02:17:22,451 basehttp "GET /media/noticias/f74a289668c52d4cc6498f92e11856e93a332dda.png HTTP/1.1" 200 341084
+INFO 2025-12-11 02:17:22,471 basehttp "GET /media/podcast_thumbnails/RadioJornaldoComercio.jpg HTTP/1.1" 200 23695
+INFO 2025-12-11 02:17:22,521 basehttp "GET /static/Athenas.svg HTTP/1.1" 200 16040
+INFO 2025-12-11 02:17:25,604 basehttp "GET / HTTP/1.1" 200 20374
+INFO 2025-12-11 02:17:25,631 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:17:25,634 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:17:25,638 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:17:25,638 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 200 1512
+INFO 2025-12-11 02:17:25,642 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2795
+INFO 2025-12-11 02:17:25,643 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 200 0
+INFO 2025-12-11 02:17:25,758 basehttp - Broken pipe from ('127.0.0.1', 59398)
+INFO 2025-12-11 02:17:25,760 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 200 11121
+INFO 2025-12-11 02:17:25,763 basehttp - Broken pipe from ('127.0.0.1', 59397)
+INFO 2025-12-11 02:17:25,763 basehttp - Broken pipe from ('127.0.0.1', 59400)
+INFO 2025-12-11 02:17:25,766 basehttp - Broken pipe from ('127.0.0.1', 59402)
+INFO 2025-12-11 02:17:25,773 basehttp - Broken pipe from ('127.0.0.1', 59399)
+INFO 2025-12-11 02:17:25,775 basehttp - Broken pipe from ('127.0.0.1', 59404)
+INFO 2025-12-11 02:17:25,846 basehttp "GET / HTTP/1.1" 200 20430
+INFO 2025-12-11 02:17:25,920 basehttp "GET / HTTP/1.1" 200 20328
+INFO 2025-12-11 02:17:25,949 basehttp "GET /static/css/athena-styles.css HTTP/1.1" 200 25773
+INFO 2025-12-11 02:17:25,949 basehttp "GET /static/js/load_more_news.js HTTP/1.1" 200 3022
+INFO 2025-12-11 02:17:25,952 basehttp "GET /static/js/persistent-podcast.js HTTP/1.1" 200 0
+INFO 2025-12-11 02:17:25,953 basehttp "GET /static/js/script.js HTTP/1.1" 200 14072
+INFO 2025-12-11 02:17:25,956 basehttp "GET /static/js/feedback.js HTTP/1.1" 200 2795
+INFO 2025-12-11 02:17:25,957 basehttp "GET /static/js/GetGeoLocation.js HTTP/1.1" 200 1512
+INFO 2025-12-11 02:17:26,327 basehttp "GET /media/podcast_thumbnails/RadioJornaldoComercio.jpg HTTP/1.1" 200 23695
+INFO 2025-12-11 02:17:26,327 basehttp "GET /static/logo-uol-1024.svg HTTP/1.1" 200 11121
+INFO 2025-12-11 02:17:26,339 basehttp "GET /static/jcpe-logo.svg HTTP/1.1" 200 119637
+INFO 2025-12-11 02:17:26,344 basehttp "GET /media/noticias/dcbcc6a5cad45cb39c3ded30fcf21ee491469d04.png HTTP/1.1" 200 140877
+INFO 2025-12-11 02:17:26,350 basehttp "GET /media/noticias/f74a289668c52d4cc6498f92e11856e93a332dda.png HTTP/1.1" 200 341084
+INFO 2025-12-11 02:17:26,364 basehttp "GET /media/noticias/ca2ff329164e2e53bed3ca6a3ddb2d8a561219d1.png HTTP/1.1" 200 180690
+INFO 2025-12-11 02:17:26,378 basehttp "GET /media/noticias/4c415401d846f913ad1f8f8bbb557b12b5e4dce9.png HTTP/1.1" 200 1004168
+INFO 2025-12-11 02:17:26,383 basehttp "GET /media/noticias/96f19f84480b62546f26ed280dd2ef0071a56621.png HTTP/1.1" 200 1182057
+INFO 2025-12-11 02:17:26,391 basehttp "GET /media/noticias/be0633b9948cf27b1b474a52d16acfdfdda422e2.png HTTP/1.1" 200 1661710
+INFO 2025-12-11 02:17:26,960 basehttp "GET /static/Athenas.svg HTTP/1.1" 200 16040
+INFO 2025-12-11 02:17:31,277 views Recebendo feedback do site
+INFO 2025-12-11 02:17:31,308 views Feedback do site salvo com sucesso
+INFO 2025-12-11 02:17:31,309 basehttp "POST /feedback/site/ HTTP/1.1" 200 92
+INFO 2025-12-11 02:17:32,988 basehttp "GET /noticia/14/ HTTP/1.1" 200 13771
+INFO 2025-12-11 02:17:33,068 basehttp "GET /static/css/noticia.css HTTP/1.1" 200 10519
+INFO 2025-12-11 02:17:37,814 views Recebendo feedback para notícia 14
+INFO 2025-12-11 02:17:37,827 views Feedback para notícia 14 salvo com sucesso
+INFO 2025-12-11 02:17:37,830 basehttp "POST /feedback/noticia/14/ HTTP/1.1" 200 100
+INFO 2025-12-11 02:17:42,792 basehttp "GET /admin/ HTTP/1.1" 200 15084
+INFO 2025-12-11 02:17:42,829 basehttp "GET /static/admin/css/dashboard.css HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:42,831 basehttp "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:42,832 basehttp "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:42,895 basehttp "GET /static/admin/img/icon-deletelink.svg HTTP/1.1" 200 392
+INFO 2025-12-11 02:17:42,895 basehttp "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 331
+INFO 2025-12-11 02:17:42,895 basehttp "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 380
+INFO 2025-12-11 02:17:44,943 basehttp "GET /admin/athena/feedback/ HTTP/1.1" 200 23223
+INFO 2025-12-11 02:17:44,975 basehttp "GET /static/admin/css/changelists.css HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:44,980 basehttp "GET /static/admin/js/vendor/jquery/jquery.min.js HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:44,980 basehttp "GET /static/admin/js/jquery.init.js HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:44,989 basehttp "GET /static/admin/js/vendor/xregexp/xregexp.min.js HTTP/1.1" 304 0
+INFO 2025-12-11 02:17:44,989 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-11 02:17:44,992 basehttp "GET /static/admin/img/search.svg HTTP/1.1" 200 458
+INFO 2025-12-11 02:17:45,027 basehttp "GET /static/admin/img/tooltag-add.svg HTTP/1.1" 200 331
+INFO 2025-12-11 02:17:45,027 basehttp "GET /static/admin/img/sorting-icons.svg HTTP/1.1" 200 1097
+INFO 2025-12-11 02:17:45,027 basehttp "GET /static/admin/img/icon-viewlink.svg HTTP/1.1" 200 581
+INFO 2025-12-11 02:17:55,357 basehttp "POST /admin/athena/feedback/ HTTP/1.1" 200 13860
+INFO 2025-12-11 02:17:55,389 basehttp "GET /static/admin/js/cancel.js HTTP/1.1" 200 884
+INFO 2025-12-11 02:17:56,232 basehttp "POST /admin/athena/feedback/ HTTP/1.1" 302 0
+INFO 2025-12-11 02:17:56,264 basehttp "GET /admin/athena/feedback/ HTTP/1.1" 200 14302
+INFO 2025-12-11 02:17:56,306 basehttp "GET /admin/jsi18n/ HTTP/1.1" 200 3342
+INFO 2025-12-11 02:17:56,343 basehttp "GET /static/admin/img/icon-yes.svg HTTP/1.1" 200 436

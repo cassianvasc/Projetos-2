@@ -11,18 +11,30 @@ function setupFeedbackForm(formId, messageId, defaultBtnText) {
 
     const mensagemEl = document.getElementById(messageId);
     const submitBtn = form.querySelector('button[type="submit"]');
+    const csrfInput = form.querySelector('input[name="csrfmiddlewaretoken"]');
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
 
         const formData = new FormData(form);
+        const csrfToken = csrfInput?.value || getCookie('csrftoken');
+        
+        // Adiciona o CSRF token ao FormData se não estiver presente (fallback)
+        if (!formData.has('csrfmiddlewaretoken') && csrfToken) {
+            formData.append('csrfmiddlewaretoken', csrfToken);
+        }
+        
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
 
         fetch(form.action, {
             method: 'POST',
             body: formData,
-            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+            headers: { 
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
         })
         .then(response => response.json())
         .then(data => {
@@ -35,7 +47,8 @@ function setupFeedbackForm(formId, messageId, defaultBtnText) {
                 throw new Error('Erro ao enviar');
             }
         })
-        .catch(() => {
+        .catch((error) => {
+            console.error('Erro no feedback:', error);
             mensagemEl.textContent = 'Erro ao enviar feedback. Tente novamente.';
             mensagemEl.className = 'mensagem-feedback erro';
             mensagemEl.style.display = 'block';
