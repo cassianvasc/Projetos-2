@@ -397,6 +397,9 @@ class TesteE2E(LiveServerTestCase):
         perfil.refresh_from_db()
         self.assertTrue(perfil.relevantes.filter(id=noticia.id).exists())
         
+        favorite_btn.click()
+        time.sleep(1)
+        
         perfil.refresh_from_db()
         self.assertFalse(perfil.relevantes.filter(id=noticia.id).exists())
 
