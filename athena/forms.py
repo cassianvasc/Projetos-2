@@ -1,5 +1,5 @@
 from django import forms
-from .models import Perfil, Feedback
+from .models import Feedback
 from Jornalista.models import Noticia
 
 class NoticiaForm(forms.ModelForm):
@@ -9,11 +9,6 @@ class NoticiaForm(forms.ModelForm):
         widgets = {
             'imagem': forms.ClearableFileInput(attrs={'class': 'form-input'}),
         }
-
-class PerfilForm(forms.ModelForm):
-    class Meta:
-        model = Perfil
-        fields = ['tags', 'relevantes']
 
 
 class FeedbackForm(forms.ModelForm):

@@ -1,26 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.db import models
 from .models import Tag, Feedback
 from .forms import NoticiaForm, FeedbackForm, FeedbackSiteForm
-from django.shortcuts import render
-from django.shortcuts import render,redirect
 from django.apps import apps
 from django.core.paginator import Paginator
-
 from django.contrib.auth.models import User
-
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login, authenticate
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
-from Jornalista.models import Noticia, Perfil
-from Podcast_Player.models import LivePodcast
-from .models import *
-
-from django.http import JsonResponse
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from Jornalista.models import Noticia, Perfil
+from Podcast_Player.models import LivePodcast
+from .models import *
 from math import radians, cos, sin, asin, sqrt
 import json
 import random
@@ -70,8 +64,6 @@ def home_page(request):
     favoritos = []
     favoritos_ids = []
     live_podcast = None
-    
-    print(f"localização:{latitude},{longitude}")
 
     if latitude and longitude:
         noticias_proximas = [
@@ -428,5 +420,3 @@ def feedbacks_noticia(request, noticia_id):
     }
     
     return render(request, 'athena/feedbacks_noticia.html', context)
-
-# Create your views here.

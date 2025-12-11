@@ -1,14 +1,14 @@
 from django import forms
+from .models import Noticia
 
-from .models import Post
 
 class CreatePostForm(forms.ModelForm):
     class Meta:
-        model = Post
-        fields = ["Título", "Conteúdo"]
+        model = Noticia
+        fields = ["titulo", "resumo", "conteudo"]
 
 
 class UpdatePostForm(forms.ModelForm):
     class Meta:
-        model = Post
-        fields = ["Título", "Conteúdo"]
+        model = Noticia
+        fields = ["titulo", "resumo", "conteudo"]

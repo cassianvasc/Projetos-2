@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User 
 from django.utils.text import slugify
 
-# NOVO MODELO: Tag
+
 class Tag(models.Model):
     nome = models.CharField(max_length=50, unique=True, verbose_name='Nome da Tag')
     slug = models.SlugField(unique=True, max_length=60, blank=True)
@@ -32,7 +32,6 @@ class Perfil(models.Model):
        return f"Perfil de {self.user.username}"
 
 
-# NOVO MODELO: Feedback
 class Feedback(models.Model):
     RATING_CHOICES = [
         (1, '1 - Muito Ruim'),
@@ -109,23 +108,3 @@ class Feedback(models.Model):
             return f"Feedback na notícia '{self.noticia.titulo}' - {self.avaliacao}/10"
         else:
             return f"Feedback no Site - {self.avaliacao}/10"
-    
-
-"""
-class Localização(models.Model):
-    session_id = models.CharField(max_length=40, unique=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    location = models.PointField(null=True, blank=True, srid=4326)
-    city = models.CharField(max_length=100, blank=True)
-    user_agent = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    def save_location(self, latitude, longitude, session_id, ip_address=None, user_agent=None):
-        self.session_id = session_id
-        self.ip_address = ip_address
-        self.user_agent = user_agent or ''
-        self.location = Point(longitude, latitude, srid=4326)
-        self.save()
-    def __str__(self):
-        return f"Localização anônima: {self.session_id[:8]}...
-"""

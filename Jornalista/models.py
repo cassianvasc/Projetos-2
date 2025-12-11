@@ -34,9 +34,6 @@ class Noticia(models.Model):
             if location:
                 self.latitude = location.latitude
                 self.longitude = location.longitude
-                print("tudo ok")
-            else:
-                print("localização não encontrada")
         super().save(*args, **kwargs)
 
     def __str__(self):
