@@ -14,7 +14,7 @@
     <!-- Barra superior fixa com logo UOL -->
     <div class="uol-bar" role="banner">
         <a href="https://www.uol.com.br/" class="uol-bar__logo" aria-label="UOL">
-            <img src="/media/logo-uol-1024.svg" alt="Logo UOL">
+            <img src="{% static 'logo-uol-1024.svg' %}" alt="Logo UOL">
         </a>
     </div>
 
@@ -30,7 +30,7 @@
     <header class="header">
         <div class="container header-content">
             <a href="{% url 'home' %}" class="logo" aria-label="Jornal do Comercio">
-                <img src="/media/jcpe-logo.svg" alt="Jornal do Comercio" class="jc-logo">
+                <img src="{% static 'jcpe-logo.svg' %}" alt="Jornal do Comercio" class="jc-logo">
             </a>
 
             <nav class="nav-menu" aria-label="Menu principal">

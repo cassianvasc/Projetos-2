@@ -15,9 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 
 from athena import views
 from Podcast_Player import views as views_podcast
@@ -61,4 +62,13 @@ urlpatterns = [
     path('feedback/site/', views.submit_feedback_site, name='submit_feedback_site'),
     path('feedbacks/noticia/<int:noticia_id>/', views.feedbacks_noticia, name='feedbacks_noticia'),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+# Servir arquivos de mídia em desenvolvimento e produção
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # Em produção, serve arquivos de mídia manualmente
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]

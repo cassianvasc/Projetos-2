@@ -30,6 +30,39 @@ body {
   position: relative;
 }
 
+/* ===== BOTÃO VOLTAR FIXO ===== */
+.back-btn-fixed{
+  position: fixed;
+  top: 90px;
+  left: 20px;
+  z-index: 1500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--branco);
+  color: var(--preto);
+  border: 2px solid var(--cinza-medio);
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.back-btn-fixed:hover{
+  background: var(--vermelho);
+  color: var(--branco);
+  border-color: var(--vermelho);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 32px rgba(190, 19, 17, 0.3);
+}
+
+@media (max-width: 480px){
+  .back-btn-fixed{ top: 80px; left: 10px; width: 45px; height: 45px; font-size: 1.1rem; }
+}
+
 /* ===== LOGO NO TOPO ===== */
 .logo {
   position: absolute;
@@ -72,6 +105,23 @@ body {
 }
 
 /* ===== TÍTULOS ===== */
+.user-icon-large {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.user-icon-large i {
+  font-size: 10rem;
+  color: var(--azul);
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.user-icon-large i:hover {
+  color: var(--vermelho);
+  transform: scale(1.05);
+}
+
 h1 {
   color: var(--preto);
   font-size: 2rem;
@@ -85,6 +135,29 @@ h1 {
   font-size: 1rem;
   margin-bottom: 2rem;
   line-height: 1.5;
+}
+
+.success-message {
+  text-align: center;
+  color: var(--vermelho);
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.login-actions {
+  margin: 2rem 0;
+}
+
+.link-primary {
+  color: var(--vermelho);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.link-primary:hover {
+  color: var(--laranja);
+  text-decoration: underline;
 }
 
 /* ===== DIVISOR ===== */
@@ -171,6 +244,11 @@ form {
   color: var(--branco);
   box-shadow: 0 8px 20px rgba(190, 19, 17, 0.3);
   margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
 }
 
 .btn-primary:hover {
